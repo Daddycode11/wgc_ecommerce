@@ -1,0 +1,11 @@
+{
+    "id": "jowel/bidding",
+    "name": "Bidding System",
+    "namespace": "Botble\\Bidding\\",
+    "provider": "Botble\\Bidding\\Providers\\BiddingServiceProvider",
+    "author": "Jowel Paña",
+    "url": "",
+    "version": "1.0.0",
+    "description": "Allows users to bid on products",
+    "minimum_core_version": "7.3.5"
+}

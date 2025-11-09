@@ -30,6 +30,8 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Laravel\Sanctum\HasApiTokens;
+use App\Models\Wallet;
+
 
 class Customer extends BaseModel implements
     AuthenticatableContract,
@@ -60,6 +62,7 @@ class Customer extends BaseModel implements
         'remember_token',
     ];
 
+    
     protected $casts = [
         'status' => CustomerStatusEnum::class,
         'dob' => 'date',
@@ -121,7 +124,20 @@ class Customer extends BaseModel implements
                 File::deleteDirectory($folder);
             }
         });
+
+
+
+        static::created(function ($user) {
+            $user->wallet()->create(['balance' => 0]);
+        });
     }
+
+
+    public function wallet()
+    {
+        return $this->hasOne(Wallet::class);
+    }
+
 
     public function __get($key)
     {

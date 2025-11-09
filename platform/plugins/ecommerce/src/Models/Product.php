@@ -224,6 +224,10 @@ class Product extends BaseModel
             'tag_id'
         );
     }
+public function bids()
+{
+    return $this->hasMany(\Botble\Bidding\Models\Bid::class, 'product_id');
+}
 
     public function brand(): BelongsTo
     {

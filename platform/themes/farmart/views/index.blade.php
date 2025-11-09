@@ -1,11 +1,21 @@
 @php Theme::layout('homepage') @endphp
 
+{{-- 🔥 Active Bidding Items Section --}}
+<section class="container py-5">
+    <h2 class="text-center mb-4 fw-bold text-primary">🔥 Active Bidding Items</h2>
+{!! do_shortcode('[bidding-system]') !!}
+
+    {{-- Load the Bidding Widget or Shortcode --}}
+    {!! do_shortcode('[bidding-system]') !!}
+</section>
+
+{{-- ⚙️ Default Homepage Setup Notice (keep this below for safety) --}}
 <div class="container">
     <div style="margin: 40px 0;">
         <h4 style="color: #f00">You need to setup your homepage first!</h4>
 
-        <p><strong>1. Go to Admin -> Plugins then activate all plugins.</strong></p>
-        <p><strong>2. Go to Admin -> Pages and create a page:</strong></p>
+        <p><strong>1. Go to Admin → Plugins then activate all plugins.</strong></p>
+        <p><strong>2. Go to Admin → Pages and create a page:</strong></p>
 
         <div style="margin: 20px 0;">
             <div>- Content:</div>
@@ -34,6 +44,6 @@
             <div>- Template: <strong>Homepage</strong>.</div>
         </div>
 
-        <p><strong>3. Then go to Admin -> Appearance -> Theme options -> Page to set your homepage.</strong></p>
+        <p><strong>3. Then go to Admin → Appearance → Theme options → Page to set your homepage.</strong></p>
     </div>
 </div>

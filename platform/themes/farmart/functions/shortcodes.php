@@ -18,6 +18,10 @@ use Botble\Theme\Supports\ThemeSupport;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Support\Str;
 use Theme\Farmart\Supports\Wishlist;
+use Botble\Bidding\Models\BiddingSystem;
+use Botble\Raffle\Models\Raffle;
+
+
 
 app()->booted(function () {
     ThemeSupport::registerGoogleMapsShortcode();
@@ -70,7 +74,7 @@ app()->booted(function () {
             $attributes = $shortcode->toArray();
 
             for ($i = 1; $i < 5; $i++) {
-                if (isset($attributes['key_' . $i]) && ! empty($attributes['key_' . $i])) {
+                if (isset($attributes['key_' . $i]) && !empty($attributes['key_' . $i])) {
                     $ad = display_ads_advanced((string) $attributes['key_' . $i]);
                     if ($ad) {
                         $ads[] = $ad;
@@ -80,7 +84,7 @@ app()->booted(function () {
 
             $ads = array_filter($ads);
 
-            if (! count($ads)) {
+            if (!count($ads)) {
                 return null;
             }
 
@@ -93,6 +97,111 @@ app()->booted(function () {
             return Theme::partial('shortcodes.ads.theme-ads-admin-config', compact('ads', 'attributes'));
         });
     }
+
+
+
+    if (is_plugin_active('bidding')) {
+        add_shortcode(
+            'featured-bidding-display',
+            __('Featured Bidding Diplay'),
+            __('FeaturedBidding Diplay'),
+            function (Shortcode $shortcode) {
+
+                $bids = BiddingSystem::with('product')
+                    ->where('is_published', true)
+                    // ->where('end_time', '>', now())
+                    ->orderBy('created_at', 'desc')
+                    ->take(8)
+                    ->get();
+                return Theme::partial('shortcodes.ecommerce.featured-bidding-display', compact('bids'));
+            }
+        );
+    }
+
+   if (is_plugin_active('raffle')) {
+    add_shortcode(
+        'featured-raffle-display',
+        __('Featured Raffle Display (Debug Mode)'),
+        __('Displays featured raffles and debug info'),
+        function ($shortcode) {
+
+            $raffles = Raffle::where('is_featured', 1)
+                // ->where('entry_date', '<=', now())
+                // ->where('end_date', '>=', now())
+                ->orderBy('created_at', 'desc')
+                ->paginate(8);
+
+            $title = $shortcode->title ?? __('🎉 Featured Raffles');
+
+            return Theme::partial('shortcodes.ecommerce.featured-raffle-display', compact('raffles', 'title'));
+
+
+            
+
+            // ✅ Fetch raffles with filters
+            // $raffles = Raffle::where('is_featured', 1)
+            //     ->where('entry_date', '<=', now())
+            //     ->where('end_date', '>=', now())
+            //     ->orderBy('created_at', 'desc')
+            //     ->take(8)
+            //     ->get();
+
+            // ✅ Debug Output
+            // if ($raffles->isEmpty()) {
+            //     // Show clear message when no data found
+            //     return "<div class='container py-4'>
+            //         <h2 style='color:red;'>⚠️ No raffles found!</h2>
+            //         <p>Debug Info:</p>
+            //         <ul style='font-family: monospace;'>
+            //             <li><strong>is_featured = 1</strong></li>
+            //             <li><strong>entry_date &lt;= now():</strong> " . now() . "</li>
+            //             <li><strong>end_date &gt;= now():</strong> " . now() . "</li>
+            //         </ul>
+            //         <hr>
+            //         <p><strong>Suggestion:</strong> Check your raffle records in the database if they match these conditions.</p>
+            //         <p><strong>Test:</strong> Try removing date filters temporarily to confirm retrieval.</p>
+            //     </div>";
+            // }
+
+            // ✅ Pretty Print Data for Debugging
+            // $debugTable = "<table border='1' cellpadding='6' style='border-collapse:collapse;width:100%;font-family:monospace;'>
+            //     <thead style='background:#f5f5f5;'>
+            //         <tr>
+            //             <th>ID</th>
+            //             <th>Event Name</th>
+            //             <th>Prize Type</th>
+            //             <th>Featured?</th>
+            //             <th>Entry Date</th>
+            //             <th>End Date</th>
+            //             <th>Status</th>
+            //         </tr>
+            //     </thead>
+            //     <tbody>";
+
+            // foreach ($raffles as $r) {
+            //     $debugTable .= "<tr>
+            //         <td>{$r->id}</td>
+            //         <td>{$r->event_name}</td>
+            //         <td>{$r->prize_type}</td>
+            //         <td>{$r->is_featured}</td>
+            //         <td>{$r->entry_date}</td>
+            //         <td>{$r->end_date}</td>
+            //         <td>{$r->status}</td>
+            //     </tr>";
+            // }
+
+            // $debugTable .= "</tbody></table>";
+
+            // return "<div class='container py-4'>
+            //     <h2>{$title}</h2>
+            //     <p><strong>✅ Found " . $raffles->count() . " featured raffles.</strong></p>
+            //     {$debugTable}
+            // </div>";
+        }
+    );
+}
+
+
 
     if (is_plugin_active('ecommerce')) {
         add_shortcode(
@@ -140,7 +249,7 @@ app()->booted(function () {
                     ])
                     ->first();
 
-                if (! $flashSale || $flashSale->products->isEmpty()) {
+                if (!$flashSale || $flashSale->products->isEmpty()) {
                     return null;
                 }
 
@@ -222,7 +331,7 @@ app()->booted(function () {
                     ])
                     ->first();
 
-                if (! $category) {
+                if (!$category) {
                     return null;
                 }
 

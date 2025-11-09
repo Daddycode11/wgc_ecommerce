@@ -1,0 +1,11 @@
+{
+    "id": "wgc/raffle",
+    "name": "Raffle",
+    "namespace": "Botble\\Raffle\\",
+    "provider": "Botble\\Raffle\\Providers\\RaffleServiceProvider",
+    "author": "eutech",
+    "url": "",
+    "version": "1.0.0",
+    "description": "",
+    "minimum_core_version": "7.3.5"
+}
