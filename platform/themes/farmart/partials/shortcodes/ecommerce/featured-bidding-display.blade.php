@@ -111,14 +111,14 @@
         $("body").on("click", ".btn-edit", async (e) => {
             modalEdit($(e.currentTarget).data("bid-id"));
             $("#bid-amount").attr("value", $(e.currentTarget).data("highest"))
-            const highest = Number($(e.currentTarget).data("highest") || 0)
+            const highest = $(e.currentTarget).data("highest").replace(/,/g, "");
             const minString = $(e.currentTarget).data("min").replace(/,/g, "");
             const starting_price = $(e.currentTarget).data("start").replace(/,/g, "");
 
             const min = parseFloat(minString || 0)
             const startPrice = parseFloat(starting_price)
-
-            $("#bid-amount").attr("min", (highest + min > startPrice) ? highest + min : startPrice);
+            const high = parseFloat(highest)
+            $("#bid-amount").attr("min", (high + min > startPrice) ? high + min : startPrice);
         });
 
         $("#bid-form").on("submit", async (e) => {

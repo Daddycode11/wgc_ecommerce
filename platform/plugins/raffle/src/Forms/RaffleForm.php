@@ -20,7 +20,7 @@ class RaffleForm extends FormAbstract
                 'required' => true,
                 'attr' => ['placeholder' => 'Enter raffle event name'],
             ])
-            ->add('entry_date', 'text', [
+            ->add('entry_date', 'datetime-local', [
                 'label' => 'Entry Start Date',
                 'required' => true,
                 'attr' => [
@@ -29,7 +29,7 @@ class RaffleForm extends FormAbstract
                     'value' => $this->getModel() ? $this->getModel()->entry_date?->format('Y-m-d\TH:i') : null,
                 ],
             ])
-            ->add('end_date', 'text', [
+            ->add('end_date', 'datetime-local', [
                 'label' => 'Entry End Date',
                 'required' => true,
                 'attr' => [
@@ -37,7 +37,7 @@ class RaffleForm extends FormAbstract
                     'value' => $this->getModel() ? $this->getModel()->end_date?->format('Y-m-d\TH:i') : null,
                 ],
             ])
-            ->add('draw_date', 'text', [
+            ->add('draw_date', 'datetime-local', [
                 'label' => 'Draw Date',
                 'required' => false,
                 'attr' => [

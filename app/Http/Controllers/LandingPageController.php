@@ -28,13 +28,20 @@ class LandingPageController extends Controller
         }
         $userWallet->balance -= $amount;
 
+        
+        $biddingSystem = BiddingSystem::where("id", $biddingSystemId)->first();
+        $userWallet->save();
+        // dd($biddingSystem->highestBid()->first());
+        $lastBid = Wallet::where("customer_id", $biddingSystem->highestBid()->first()->customer_id)->first();
+        $lastBid->balance += $biddingSystem->highestBid()->first()->amount;
+        // dd($lastBid);
+        $lastBid->save();
         $dd = Bid::create([
             'bidding_system_id' => $biddingSystemId,
             'customer_id' => $request->customer_id,
             'amount' => $amount,
             'status' => 'published',
         ]);
-        $userWallet->save();
         return response()->json(['message' => 'Bid placed successfully.', "balance" => $userWallet->balance], 200);
     }
 
@@ -102,5 +109,28 @@ class LandingPageController extends Controller
         // For example, create a RaffleEntry record linking the user to the raffle
 
         return response()->json(['message' => 'Successfully joined the raffle.', 'balance' => $wallet->balance, 'slots' => $request->input('slots')], 200);
+    }
+
+    public function getRaffleEntries(Request $request)
+    {
+        $entries = RaffleEntries::where("raffle_promo_id", $request->raffle_promo_id)->get();
+
+        return response()->json([
+            "data" => $entries
+        ],200);
+    }
+
+    public function updateWinner(Request $request)
+    {
+        $assignwinner = Raffle::where("id", $request->raffle_id)->first();
+        if(!$assignwinner){
+            return response()->json(['error' => 'Raffle not found.'], 404);
+        }
+        if($assignwinner->winner_code){
+            return response()->json(['error' => 'Winner already assigned.'], 400);
+        }
+        $assignwinner->winner_code = $request->winner_code;
+        $assignwinner->save();
+        return response()->json(['message' => 'Winner updated successfully.'], 200);
     }
 }

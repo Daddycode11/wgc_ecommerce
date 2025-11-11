@@ -31,4 +31,7 @@ class Raffle extends BaseModel
         'status' => BaseStatusEnum::class,
         'is_featured' => 'boolean',
     ];
+
+    protected $dateFormat = "Y-m-d H:i";
+
 }

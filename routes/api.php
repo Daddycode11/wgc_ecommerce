@@ -20,4 +20,5 @@ Route::get('/get-wallet-amount', [FarmartController::class, 'getAmount'])->name(
 Route::post('/bid', [LandingPageController::class, "Bid"])->name('Bid');
 Route::post('/update-bid-winner', [LandingPageController::class, "UpdateBidWinner"])->name('UpdateBidWinner');
 Route::post('/join-raffle', [LandingPageController::class, "JoinRaffle"])->name('JoinRaffle');
-
+Route::get('/get-raffle-entries',[LandingPageController::class, "getRaffleEntries"])->name('get-raffle-entry');
+Route::post('/update-raffle-winner', [LandingPageController::class, "updateWinner"])->name('update-raffle-winner');
