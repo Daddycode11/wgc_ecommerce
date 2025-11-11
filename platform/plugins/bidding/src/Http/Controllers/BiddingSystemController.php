@@ -60,7 +60,7 @@ class BiddingSystemController extends BaseController
             'product_id'=>'required|exists:ec_products,id',
             'starting_price'=>'required|numeric|min:0',
             'min_bid_increment'=>'required|numeric|min:0',
-            'end_time'=>'required|date|after:now',
+            'end_time'=>'nullable|date',
             'image'=>'nullable|image|max:2048'
         ]);
 

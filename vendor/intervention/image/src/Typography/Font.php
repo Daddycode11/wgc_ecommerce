@@ -73,9 +73,15 @@ class Font implements FontInterface
      * {@inheritdoc}
      *
      * @see FontInterface::setFilename()
+     *
+     * @throws FontException
      */
     public function setFilename(string $filename): FontInterface
     {
+        if (!file_exists($filename)) {
+            throw new FontException('Font file ' . $filename . ' does not exist.');
+        }
+
         $this->filename = $filename;
 
         return $this;

@@ -73,7 +73,7 @@ class RaffleController extends BaseController
     {
         $data = $this->formatDateTimeFields($request->validated());
         if($request->has('prize_image')){
-            $data['prize_image'] = $request->fprize_image;
+            $data['prize_image'] = $request->prize_image;
         }
 
         $raffle->update($data);
@@ -111,7 +111,8 @@ class RaffleController extends BaseController
                 ? Carbon::parse($data[$field])->format('Y-m-d H:i:s')
                 : null;
         }
-
+        $data['number_of_tickets'] = isset($data['number_of_tickets']) ? (int) $data['number_of_tickets'] : null;
+        $data['winner_code'] = $data['winner_code'] ?? null;
         return $data;
     }
 

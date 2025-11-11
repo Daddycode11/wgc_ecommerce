@@ -12,6 +12,7 @@ class RectangleResizer
 {
     /**
      * @throws GeometryException
+     * @return void
      */
     public function __construct(
         protected ?int $width = null,
@@ -31,6 +32,8 @@ class RectangleResizer
     }
 
     /**
+     * Static factory method to create resizer with given target size
+     *
      * @throws GeometryException
      */
     public static function to(mixed ...$arguments): self
@@ -38,27 +41,41 @@ class RectangleResizer
         return new self(...$arguments);
     }
 
+    /**
+     * Determine if resize has target width
+     */
     protected function hasTargetWidth(): bool
     {
-        return is_integer($this->width);
+        return is_int($this->width);
     }
 
+    /**
+     * Return target width of resizer if available
+     */
     protected function getTargetWidth(): ?int
     {
         return $this->hasTargetWidth() ? $this->width : null;
     }
 
+    /**
+     * Determine if resize has target height
+     */
     protected function hasTargetHeight(): bool
     {
-        return is_integer($this->height);
+        return is_int($this->height);
     }
 
+    /**
+     * Return target width of resizer if available
+     */
     protected function getTargetHeight(): ?int
     {
         return $this->hasTargetHeight() ? $this->height : null;
     }
 
     /**
+     * Return target size object
+     *
      * @throws GeometryException
      */
     protected function getTargetSize(): SizeInterface
@@ -70,6 +87,9 @@ class RectangleResizer
         return new Rectangle($this->width, $this->height);
     }
 
+    /**
+     * Set target width of resizer
+     */
     public function toWidth(int $width): self
     {
         $this->width = $width;
@@ -77,6 +97,9 @@ class RectangleResizer
         return $this;
     }
 
+    /**
+     * Set target height of resizer
+     */
     public function toHeight(int $height): self
     {
         $this->height = $height;
@@ -84,6 +107,9 @@ class RectangleResizer
         return $this;
     }
 
+    /**
+     * Set target size to given size object
+     */
     public function toSize(SizeInterface $size): self
     {
         $this->width = $size->width();
@@ -92,6 +118,9 @@ class RectangleResizer
         return $this;
     }
 
+    /**
+     * Get proportinal width
+     */
     protected function getProportionalWidth(SizeInterface $size): int
     {
         if (!$this->hasTargetHeight()) {
@@ -101,6 +130,9 @@ class RectangleResizer
         return max([1, (int) round($this->height * $size->aspectRatio())]);
     }
 
+    /**
+     * Get proportinal height
+     */
     protected function getProportionalHeight(SizeInterface $size): int
     {
         if (!$this->hasTargetWidth()) {
@@ -110,6 +142,9 @@ class RectangleResizer
         return max([1, (int) round($this->width / $size->aspectRatio())]);
     }
 
+    /**
+     * Resize given size to target size of the resizer
+     */
     public function resize(SizeInterface $size): SizeInterface
     {
         $resized = new Rectangle($size->width(), $size->height());
@@ -125,6 +160,9 @@ class RectangleResizer
         return $resized;
     }
 
+    /**
+     * Resize given size to target size of the resizer but do not exceed original size
+     */
     public function resizeDown(SizeInterface $size): SizeInterface
     {
         $resized = new Rectangle($size->width(), $size->height());
@@ -144,6 +182,9 @@ class RectangleResizer
         return $resized;
     }
 
+    /**
+     * Resize given size to target size proportinally
+     */
     public function scale(SizeInterface $size): SizeInterface
     {
         $resized = new Rectangle($size->width(), $size->height());
@@ -168,6 +209,9 @@ class RectangleResizer
         return $resized;
     }
 
+    /**
+     * Resize given size to target size proportinally but do not exceed original size
+     */
     public function scaleDown(SizeInterface $size): SizeInterface
     {
         $resized = new Rectangle($size->width(), $size->height());
@@ -211,7 +255,6 @@ class RectangleResizer
      *
      * @param SizeInterface $size Size to be resized
      * @throws GeometryException
-     * @return SizeInterface
      */
     public function cover(SizeInterface $size): SizeInterface
     {
@@ -235,7 +278,6 @@ class RectangleResizer
      *
      * @param SizeInterface $size Size to be resized
      * @throws GeometryException
-     * @return SizeInterface
      */
     public function contain(SizeInterface $size): SizeInterface
     {
@@ -259,7 +301,6 @@ class RectangleResizer
      *
      * @param SizeInterface $size Size to be resized
      * @throws GeometryException
-     * @return SizeInterface
      */
     public function containDown(SizeInterface $size): SizeInterface
     {
@@ -289,10 +330,6 @@ class RectangleResizer
 
     /**
      * Crop target size out of given size at given position (i.e. move the pivot point)
-     *
-     * @param SizeInterface $size
-     * @param string $position
-     * @return SizeInterface
      */
     public function crop(SizeInterface $size, string $position = 'top-left'): SizeInterface
     {

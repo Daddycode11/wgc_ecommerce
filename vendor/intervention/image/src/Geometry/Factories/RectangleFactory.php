@@ -4,23 +4,28 @@ declare(strict_types=1);
 
 namespace Intervention\Image\Geometry\Factories;
 
+use Closure;
 use Intervention\Image\Geometry\Point;
 use Intervention\Image\Geometry\Rectangle;
+use Intervention\Image\Interfaces\DrawableFactoryInterface;
+use Intervention\Image\Interfaces\DrawableInterface;
+use Intervention\Image\Interfaces\PointInterface;
 
-class RectangleFactory
+class RectangleFactory implements DrawableFactoryInterface
 {
     protected Rectangle $rectangle;
 
     /**
      * Create new instance
      *
-     * @param Point $pivot
-     * @param callable|Rectangle $init
      * @return void
      */
-    public function __construct(protected Point $pivot, callable|Rectangle $init)
-    {
+    public function __construct(
+        protected PointInterface $pivot = new Point(),
+        null|Closure|Rectangle $init = null,
+    ) {
         $this->rectangle = is_a($init, Rectangle::class) ? $init : new Rectangle(0, 0, $pivot);
+        $this->rectangle->setPosition($pivot);
 
         if (is_callable($init)) {
             $init($this);
@@ -28,11 +33,27 @@ class RectangleFactory
     }
 
     /**
-     * Set the size of the rectangle to be produced
+     * {@inheritdoc}
      *
-     * @param int $width
-     * @param int $height
-     * @return RectangleFactory
+     * @see DrawableFactoryInterface::init()
+     */
+    public static function init(null|Closure|DrawableInterface $init = null): self
+    {
+        return new self(init: $init);
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @see DrawableFactoryInterface::create()
+     */
+    public function create(): DrawableInterface
+    {
+        return $this->rectangle;
+    }
+
+    /**
+     * Set the size of the rectangle to be produced
      */
     public function size(int $width, int $height): self
     {
@@ -43,9 +64,6 @@ class RectangleFactory
 
     /**
      * Set the width of the rectangle to be produced
-     *
-     * @param int $width
-     * @return RectangleFactory
      */
     public function width(int $width): self
     {
@@ -56,9 +74,6 @@ class RectangleFactory
 
     /**
      * Set the height of the rectangle to be produced
-     *
-     * @param int $height
-     * @return RectangleFactory
      */
     public function height(int $height): self
     {
@@ -69,9 +84,6 @@ class RectangleFactory
 
     /**
      * Set the background color of the rectangle to be produced
-     *
-     * @param mixed $color
-     * @return RectangleFactory
      */
     public function background(mixed $color): self
     {
@@ -82,10 +94,6 @@ class RectangleFactory
 
     /**
      * Set the border color & border size of the rectangle to be produced
-     *
-     * @param mixed $color
-     * @param int $size
-     * @return RectangleFactory
      */
     public function border(mixed $color, int $size = 1): self
     {
@@ -96,8 +104,6 @@ class RectangleFactory
 
     /**
      * Produce the rectangle
-     *
-     * @return Rectangle
      */
     public function __invoke(): Rectangle
     {

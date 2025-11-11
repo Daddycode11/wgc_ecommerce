@@ -1,5 +1,7 @@
 <?xml version="1.0"?>
 <ruleset>
+    <config name="php_version" value="80002"/>
+
     <arg name="basepath" value="."/>
     <arg name="extensions" value="php"/>
     <arg name="parallel" value="80"/>
@@ -25,6 +27,10 @@
 
     <rule ref="PSR1.Methods.CamelCapsMethodName.NotCamelCaps">
       <exclude-pattern>tests/*</exclude-pattern>
+    </rule>
+
+    <rule ref="Squiz.Arrays.ArrayDeclaration.ValueNoNewline">
+      <exclude-pattern>tests/Type/GenericModelPropertyTypeTest.php</exclude-pattern>
     </rule>
 
     <rule ref="Generic.PHP.ForbiddenFunctions">

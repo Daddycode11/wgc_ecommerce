@@ -20,6 +20,12 @@ return [
             'chunk_size_helper' => 'The number of rows to be imported at a time is defined by the chunk size. Increase this value if you have a large file and data is imported very fast. Decrease this value if you encounter memory limits or gateway timeout issues when importing data.',
         ],
 
+        'failures' => [
+            'title' => 'Failures',
+            'attribute' => 'Attribute',
+            'errors' => 'Errors',
+        ],
+
         'example' => [
             'title' => 'Example',
             'download' => 'Download example :type file',
@@ -42,6 +48,7 @@ return [
     'export' => [
         'name' => 'Export',
         'heading' => 'Export :label',
+        'excel_not_supported_for_large_exports' => 'Excel format is not supported for large exports (:count items). Please use CSV format instead for better performance and reliability.',
 
         'form' => [
             'all_columns_disabled' => 'Following columns will be exported: :columns.',
@@ -59,4 +66,5 @@ return [
             'back' => 'Back to :page',
         ],
     ],
+    'check_all' => 'Check all',
 ];

@@ -28,14 +28,14 @@ class SelectAuctionWinners extends Command
             ->get();
 
         foreach ($biddings as $bidding) {
-            $highestBid = $bidding->highestBid();
+            $highestBid = $bidding->highestBid()->first();
 
             if ($highestBid) {
                 $bidding->update([
-                    'winner_id' => $highestBid->user_id
+                    'winner_id' => $highestBid->customer_id
                 ]);
 
-                $this->info("Auction '{$bidding->title}' winner selected: User ID {$highestBid->user_id}");
+                $this->info("fuction '{$bidding->title}' winner selected: User ID {$highestBid->customer_id}");
                 // Optional: Send email/notification to the winner here
             } else {
                 $this->info("Auction '{$bidding->title}' ended with no bids.");

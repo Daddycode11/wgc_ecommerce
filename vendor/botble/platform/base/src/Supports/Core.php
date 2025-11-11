@@ -72,7 +72,7 @@ final class Core
 
     private string $minimumPhpVersion = '8.1.0';
 
-    private string $licenseUrl = '';
+    private string $licenseUrl = 'https://license.botble.com';
 
     private string $licenseKey = 'CAF4B17F6D3F656125F9';
 
@@ -151,7 +151,11 @@ final class Core
 
     public function checkConnection(): bool
     {
-        return true;
+        return $this->cache->remember(
+            "license:{$this->getLicenseCacheKey()}:check_connection",
+            Carbon::now()->addDays($this->verificationPeriod),
+            fn () => rescue(fn () => $this->createRequest('check_connection_ext')->ok()) ?: false
+        );
     }
 
     public function version(): string
@@ -170,20 +174,75 @@ final class Core
      */
     public function activateLicense(string $license, string $client): bool
     {
-        $data = ['status' => true,'message' => 'Verified', 'lic_response' => 'activated'];
+        LicenseActivating::dispatch($license, $client);
 
-        $this->files->put($this->licenseFilePath, Arr::get($data, 'lic_response'), true);
+        $response = $this->createRequest('activate_license', [
+            'product_id' => $this->productId,
+            'license_code' => $license,
+            'client_name' => $client,
+            'verify_type' => $this->productSource,
+        ]);
+
+        if ($response->failed()) {
+            throw new LicenseInvalidException('Could not activate your license. Please try again later.');
+        }
+
+        $data = $response->json();
+
+        if (! Arr::get($data, 'status')) {
+            $message = Arr::get($data, 'message');
+
+            if (Arr::get($data, 'status_code') === 'ACTIVATED_MAXIMUM_ALLOWED_PRODUCT_INSTANCES') {
+                throw new LicenseIsAlreadyActivatedException($message);
+            }
+
+            LicenseInvalid::dispatch($license, $client);
+
+            throw new LicenseInvalidException($message);
+        }
+
+        try {
+            $this->files->put($this->licenseFilePath, Arr::get($data, 'lic_response'), true);
+        } catch (UnableToWriteFile|Throwable) {
+            throw UnableToWriteFile::atLocation($this->licenseFilePath);
+        }
 
         Session::forget("license:{$this->getLicenseCacheKey()}:last_checked_date");
 
         $this->clearLicenseReminder();
+
+        LicenseActivated::dispatch($license, $client);
 
         return true;
     }
 
     public function verifyLicense(bool $timeBasedCheck = false): bool
     {
-		return true;
+        LicenseVerifying::dispatch();
+
+        if (! $this->isLicenseFileExists()) {
+            return false;
+        }
+
+        $verified = true;
+
+        if ($timeBasedCheck) {
+            $dateFormat = 'd-m-Y';
+            $cachesKey = "license:{$this->getLicenseCacheKey()}:last_checked_date";
+            $lastCheckedDate = Carbon::createFromFormat(
+                $dateFormat,
+                Session::get($cachesKey, '01-01-1970')
+            )->endOfDay();
+            $now = Carbon::now()->addDays($this->verificationPeriod);
+
+            if ($now->greaterThan($lastCheckedDate) && $verified = $this->verifyLicenseDirectly()) {
+                Session::put($cachesKey, $now->format($dateFormat));
+            }
+
+            return $verified;
+        }
+
+        return $this->verifyLicenseDirectly();
     }
 
     public function revokeLicense(string $license, string $client): bool
@@ -668,16 +727,17 @@ final class Core
             'license_file' => $this->getLicenseFile(),
         ];
 
-        $response = $this->createRequest('verify_license', $data);
-        $data = $response->json();
-
-        if ($verified = $response->ok() && Arr::get($data, 'status')) {
             LicenseVerified::dispatch();
-        } else {
-            LicenseUnverified::dispatch();
-        }
+        // $response = $this->createRequest('verify_license', $data);
+        // $data = $response->json();
 
-        return $verified;
+        // if ($verified = $response->ok() && Arr::get($data, 'status')) {
+        //     LicenseVerified::dispatch();
+        // } else {
+        //     LicenseUnverified::dispatch();
+        // }
+
+        return true;
     }
 
     private function parseProductUpdateResponse(Response $response): CoreProduct|false

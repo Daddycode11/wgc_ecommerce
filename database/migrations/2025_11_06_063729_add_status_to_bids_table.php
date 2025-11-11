@@ -28,6 +28,10 @@ return new class extends Migration
             if (!Schema::hasColumn('bids', 'status')) {
                 $table->enum('status', ['published', 'draft'])->default('published')->after('amount');
             }
+            if (!Schema::hasColumn('bids', 'customer_id')) {
+                $table->unsignedBigInteger('customer_id')->nullable()->after('status');
+            }
+            
         });
     }
 
@@ -48,6 +52,9 @@ return new class extends Migration
             if (Schema::hasColumn('bids', 'bidding_system_id')) {
                 $table->dropForeign(['bidding_system_id']);
                 $table->dropColumn('bidding_system_id');
+            }
+            if (Schema::hasColumn('bids', 'customer_id')) {
+                $table->dropColumn('customer_id');
             }
         });
     }

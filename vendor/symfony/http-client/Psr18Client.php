@@ -90,7 +90,11 @@ final class Psr18Client implements ClientInterface, RequestFactoryInterface, Str
             $body = $request->getBody();
 
             if ($body->isSeekable()) {
-                $body->seek(0);
+                try {
+                    $body->seek(0);
+                } catch (\RuntimeException) {
+                    // ignore
+                }
             }
 
             $options = [
@@ -128,7 +132,7 @@ final class Psr18Client implements ClientInterface, RequestFactoryInterface, Str
             return new Request($method, $uri);
         }
 
-        throw new \LogicException(sprintf('You cannot use "%s()" as no PSR-17 factories have been found. Try running "composer require php-http/discovery psr/http-factory-implementation:*".', __METHOD__));
+        throw new \LogicException(\sprintf('You cannot use "%s()" as no PSR-17 factories have been found. Try running "composer require php-http/discovery psr/http-factory-implementation:*".', __METHOD__));
     }
 
     public function createStream(string $content = ''): StreamInterface
@@ -136,7 +140,11 @@ final class Psr18Client implements ClientInterface, RequestFactoryInterface, Str
         $stream = $this->streamFactory->createStream($content);
 
         if ($stream->isSeekable()) {
-            $stream->seek(0);
+            try {
+                $stream->seek(0);
+            } catch (\RuntimeException) {
+                // ignore
+            }
         }
 
         return $stream;
@@ -166,7 +174,7 @@ final class Psr18Client implements ClientInterface, RequestFactoryInterface, Str
             return new Uri($uri);
         }
 
-        throw new \LogicException(sprintf('You cannot use "%s()" as no PSR-17 factories have been found. Try running "composer require php-http/discovery psr/http-factory-implementation:*".', __METHOD__));
+        throw new \LogicException(\sprintf('You cannot use "%s()" as no PSR-17 factories have been found. Try running "composer require php-http/discovery psr/http-factory-implementation:*".', __METHOD__));
     }
 
     public function reset(): void

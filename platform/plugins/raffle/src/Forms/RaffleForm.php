@@ -68,6 +68,10 @@ class RaffleForm extends FormAbstract
                 'label' => 'Ticket Price (₱)',
                 'default_value' => '0.00',
             ])
+            ->add('winner_code', 'text', [
+                'label' => 'Winner Code',
+                'default_value' => '',
+            ])
             ->add('status', 'customSelect', [
                 'label' => 'Status',
                 'choices' => BaseStatusEnum::labels(),

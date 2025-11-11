@@ -5,6 +5,8 @@ namespace Botble\Bidding\Models;
 use Botble\Base\Models\BaseModel;
 use Botble\Ecommerce\Models\Product;
 use Botble\ACL\Models\User;
+use Botble\Ecommerce\Models\Customer;
+use Illuminate\Support\Facades\Log;
 
 class BiddingSystem extends BaseModel
 {
@@ -14,6 +16,19 @@ class BiddingSystem extends BaseModel
         'title', 'product_id', 'starting_price', 'min_bid_increment',
         'image', 'is_published', 'end_time', 'winner_id'
     ];
+
+    protected $appends = [
+        'winner_name',
+    ];
+
+    public function getWinnerNameAttribute()
+    {
+        if ($this->winner) {
+            return $this->winner->name;
+        }
+        return null;
+    }
+
 
     public function product()
     {
@@ -35,6 +50,6 @@ class BiddingSystem extends BaseModel
 
     public function winner()
     {
-        return $this->belongsTo(User::class, 'winner_id');
+        return $this->belongsTo(Customer::class, 'winner_id');
     }
 }

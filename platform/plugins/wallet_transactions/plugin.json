@@ -1,0 +1,11 @@
+{
+    "id": "bidding/wallet_transactions",
+    "name": "Wallet_Transactions",
+    "namespace": "Botble\\WalletTransactions\\",
+    "provider": "Botble\\WalletTransactions\\Providers\\WalletTransactionsServiceProvider",
+    "author": "",
+    "url": "",
+    "version": "1.0.0",
+    "description": "",
+    "minimum_core_version": "7.3.5"
+}

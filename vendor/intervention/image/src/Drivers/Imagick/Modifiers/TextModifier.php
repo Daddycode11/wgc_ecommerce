@@ -15,6 +15,7 @@ use Intervention\Image\Geometry\Point;
 use Intervention\Image\Interfaces\FontInterface;
 use Intervention\Image\Interfaces\FrameInterface;
 use Intervention\Image\Interfaces\ImageInterface;
+use Intervention\Image\Interfaces\PointInterface;
 use Intervention\Image\Interfaces\SpecializedInterface;
 use Intervention\Image\Modifiers\TextModifier as GenericTextModifier;
 use Intervention\Image\Typography\Line;
@@ -50,14 +51,11 @@ class TextModifier extends GenericTextModifier implements SpecializedInterface
     /**
      * Create an ImagickDraw object to draw text on the image
      *
-     * @param ImageInterface $image
-     * @param FontInterface $font
      * @throws RuntimeException
      * @throws ColorException
      * @throws FontException
      * @throws ImagickDrawException
      * @throws ImagickException
-     * @return ImagickDraw
      */
     private function imagickDrawText(ImageInterface $image, FontInterface $font): ImagickDraw
     {
@@ -77,14 +75,11 @@ class TextModifier extends GenericTextModifier implements SpecializedInterface
     /**
      * Create a ImagickDraw object to draw the outline stroke effect on the Image
      *
-     * @param ImageInterface $image
-     * @param FontInterface $font
      * @throws RuntimeException
      * @throws ColorException
      * @throws FontException
      * @throws ImagickDrawException
      * @throws ImagickException
-     * @return null|ImagickDraw
      */
     private function imagickDrawStroke(ImageInterface $image, FontInterface $font): ?ImagickDraw
     {
@@ -108,20 +103,14 @@ class TextModifier extends GenericTextModifier implements SpecializedInterface
     /**
      * Maybe draw given line of text on frame instance depending on given
      * ImageDraw instance. Optionally move line position by given offset.
-     *
-     * @param FrameInterface $frame
-     * @param Line $textline
-     * @param null|ImagickDraw $draw
-     * @param Point $offset
-     * @return void
      */
     private function maybeDrawTextline(
         FrameInterface $frame,
         Line $textline,
         ?ImagickDraw $draw = null,
-        Point $offset = new Point(),
+        PointInterface $offset = new Point(),
     ): void {
-        if ($draw !== null) {
+        if ($draw instanceof ImagickDraw) {
             $frame->native()->annotateImage(
                 $draw,
                 $textline->position()->x() + $offset->x(),
@@ -136,7 +125,6 @@ class TextModifier extends GenericTextModifier implements SpecializedInterface
      * Return imagick font processor
      *
      * @throws FontException
-     * @return FontProcessor
      */
     private function processor(): FontProcessor
     {

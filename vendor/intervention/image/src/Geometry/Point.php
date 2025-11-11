@@ -4,27 +4,42 @@ declare(strict_types=1);
 
 namespace Intervention\Image\Geometry;
 
+use ArrayIterator;
 use Intervention\Image\Interfaces\PointInterface;
+use IteratorAggregate;
+use Traversable;
 
-class Point implements PointInterface
+/**
+ * @implements IteratorAggregate<int>
+ */
+class Point implements PointInterface, IteratorAggregate
 {
     /**
      * Create new point instance
      *
-     * @param int $x
-     * @param int $y
      * @return void
      */
     public function __construct(
         protected int $x = 0,
         protected int $y = 0
     ) {
+        //
     }
 
     /**
-     * Sets X coordinate
+     * {@inheritdoc}
      *
-     * @param int $x
+     * @see IteratorAggregate::getIterator()
+     */
+    public function getIterator(): Traversable
+    {
+        return new ArrayIterator([$this->x, $this->y]);
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @see PointInterface::setX()
      */
     public function setX(int $x): self
     {
@@ -34,9 +49,9 @@ class Point implements PointInterface
     }
 
     /**
-     * Get X coordinate
+     * {@inheritdoc}
      *
-     * @return int
+     * @see PointInterface::x()
      */
     public function x(): int
     {
@@ -44,9 +59,9 @@ class Point implements PointInterface
     }
 
     /**
-     * Sets Y coordinate
+     * {@inheritdoc}
      *
-     * @param int $y
+     * @see PointInterface::setY()
      */
     public function setY(int $y): self
     {
@@ -56,9 +71,9 @@ class Point implements PointInterface
     }
 
     /**
-     * Get Y coordinate
+     * {@inheritdoc}
      *
-     * @return int
+     * @see PointInterface::y()
      */
     public function y(): int
     {
@@ -66,9 +81,9 @@ class Point implements PointInterface
     }
 
     /**
-     * Move X coordinate
+     * {@inheritdoc}
      *
-     * @param int $value
+     * @see PointInterface::moveX()
      */
     public function moveX(int $value): self
     {
@@ -78,9 +93,9 @@ class Point implements PointInterface
     }
 
     /**
-     * Move Y coordinate
+     * {@inheritdoc}
      *
-     * @param int $value
+     * @see PointInterface::moveY()
      */
     public function moveY(int $value): self
     {
@@ -89,17 +104,20 @@ class Point implements PointInterface
         return $this;
     }
 
+    /**
+     * {@inheritdoc}
+     *
+     * @see PointInterface::move()
+     */
     public function move(int $x, int $y): self
     {
         return $this->moveX($x)->moveY($y);
     }
 
     /**
-     * Sets both X and Y coordinate
+     * {@inheritdoc}
      *
-     * @param int $x
-     * @param int $y
-     * @return Point
+     * @see PointInterface::setPosition()
      */
     public function setPosition(int $x, int $y): self
     {
@@ -110,11 +128,9 @@ class Point implements PointInterface
     }
 
     /**
-     * Rotate point ccw around pivot
+     * {@inheritdoc}
      *
-     * @param float $angle
-     * @param PointInterface $pivot
-     * @return Point
+     * @see PointInterface::rotate()
      */
     public function rotate(float $angle, PointInterface $pivot): self
     {

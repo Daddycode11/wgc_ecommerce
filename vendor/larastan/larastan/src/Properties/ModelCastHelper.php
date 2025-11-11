@@ -25,7 +25,6 @@ use PHPStan\Analyser\OutOfClassScope;
 use PHPStan\Reflection\ClassReflection;
 use PHPStan\Reflection\MissingMethodFromReflectionException;
 use PHPStan\Reflection\ParameterReflection;
-use PHPStan\Reflection\ParametersAcceptorSelector;
 use PHPStan\Reflection\ReflectionProvider;
 use PHPStan\ShouldNotHappenException;
 use PHPStan\Type\Accessory\AccessoryNumericStringType;
@@ -37,6 +36,7 @@ use PHPStan\Type\FloatType;
 use PHPStan\Type\Generic\GenericObjectType;
 use PHPStan\Type\IntegerType;
 use PHPStan\Type\MixedType;
+use PHPStan\Type\NullType;
 use PHPStan\Type\ObjectType;
 use PHPStan\Type\StringType;
 use PHPStan\Type\Type;
@@ -80,7 +80,10 @@ class ModelCastHelper
             'date', 'datetime' => $this->getDateType(),
             'immutable_date', 'immutable_datetime' => new ObjectType(CarbonImmutable::class),
             AsArrayObject::class, AsEncryptedArrayObject::class => new ObjectType(ArrayObject::class),
-            AsCollection::class, AsEncryptedCollection::class => new GenericObjectType(Collection::class, [new BenevolentUnionType([new IntegerType(), new StringType()]), new MixedType()]),
+            AsCollection::class, AsEncryptedCollection::class => new BenevolentUnionType([
+                new GenericObjectType(Collection::class, [new BenevolentUnionType([new IntegerType(), new StringType()]), new MixedType()]),
+                new NullType(),
+            ]),
             AsStringable::class => new ObjectType(IlluminateStringable::class),
             default => null,
         };
@@ -101,7 +104,7 @@ class ModelCastHelper
 
         if ($classReflection->isSubclassOf(Castable::class)) {
             $methodReflection = $classReflection->getNativeMethod('castUsing');
-            $castUsingReturn  = ParametersAcceptorSelector::selectSingle($methodReflection->getVariants())->getReturnType();
+            $castUsingReturn  = $methodReflection->getVariants()[0]->getReturnType();
 
             if ($castUsingReturn->getObjectClassReflections() !== []) {
                 $classReflection = $castUsingReturn->getObjectClassReflections()[0];
@@ -111,7 +114,7 @@ class ModelCastHelper
         if ($classReflection->isSubclassOf(CastsAttributes::class)) {
             $methodReflection = $classReflection->getNativeMethod('get');
 
-            return ParametersAcceptorSelector::selectSingle($methodReflection->getVariants())->getReturnType();
+            return $methodReflection->getVariants()[0]->getReturnType();
         }
 
         if ($classReflection->isSubclassOf(CastsInboundAttributes::class)) {
@@ -158,7 +161,7 @@ class ModelCastHelper
 
         if ($classReflection->isSubclassOf(Castable::class)) {
             $methodReflection = $classReflection->getNativeMethod('castUsing');
-            $castUsingReturn  = ParametersAcceptorSelector::selectSingle($methodReflection->getVariants())->getReturnType();
+            $castUsingReturn  = $methodReflection->getVariants()[0]->getReturnType();
 
             if ($castUsingReturn->getObjectClassReflections() !== []) {
                 $classReflection = $castUsingReturn->getObjectClassReflections()[0];
@@ -170,7 +173,7 @@ class ModelCastHelper
             || $classReflection->isSubclassOf(CastsInboundAttributes::class)
         ) {
             $methodReflection = $classReflection->getNativeMethod('set');
-            $parameters       = ParametersAcceptorSelector::selectSingle($methodReflection->getVariants())->getParameters();
+            $parameters       = $methodReflection->getVariants()[0]->getParameters();
 
             $valueParameter = Arr::first($parameters, static fn (ParameterReflection $parameterReflection) => $parameterReflection->getName() === 'value');
 
@@ -189,7 +192,7 @@ class ModelCastHelper
             : IlluminateCarbon::class;
 
         if ($dateClass === IlluminateCarbon::class) {
-            return TypeCombinator::union(new ObjectType($dateClass), new ObjectType(Carbon::class));
+            return new ObjectType(Carbon::class);
         }
 
         return new ObjectType($dateClass);
@@ -248,11 +251,11 @@ class ModelCastHelper
 
         $modelCasts = $modelInstance->getCasts();
 
-        if (version_compare(LARAVEL_VERSION, '11.0.0', '>=')) { // @phpstan-ignore-line
-            $castsMethodReturnType = ParametersAcceptorSelector::selectSingle($modelClassReflection->getMethod(
+        if (version_compare(LARAVEL_VERSION, '11.0.0', '>=')) {
+            $castsMethodReturnType = $modelClassReflection->getMethod(
                 'casts',
                 new OutOfClassScope(),
-            )->getVariants())->getReturnType();
+            )->getVariants()[0]->getReturnType();
 
             if ($castsMethodReturnType->isConstantArray()->yes()) {
                 $modelCasts = array_merge(

@@ -17,6 +17,7 @@
                         <th>Entry End</th>
                         <th>Draw Date</th>
                         <th>Prize Type</th>
+                        <th>Winner Code</th>
                         <th>Tickets / Price</th>
                         <th>Status</th>
                         <th class="text-center">Actions</th>
@@ -31,6 +32,7 @@
                             <td>{{ \Carbon\Carbon::parse($raffle->end_date)->format('Y-m-d H:i') }}</td>
                             <td>{{ $raffle->draw_date ? \Carbon\Carbon::parse($raffle->draw_date)->format('Y-m-d H:i') : '-' }}</td>
                             <td>{{ ucfirst($raffle->prize_type) }}</td>
+                            <td>{{ $raffle->winner_code }}</td>
                             <td>{{ $raffle->number_of_tickets }} / ₱{{ number_format($raffle->ticket_price, 2) }}</td>
                             <td>
                                 @if($raffle->status === 'published')

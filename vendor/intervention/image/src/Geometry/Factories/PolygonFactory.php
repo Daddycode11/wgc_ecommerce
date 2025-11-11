@@ -4,20 +4,22 @@ declare(strict_types=1);
 
 namespace Intervention\Image\Geometry\Factories;
 
+use Closure;
 use Intervention\Image\Geometry\Point;
 use Intervention\Image\Geometry\Polygon;
+use Intervention\Image\Interfaces\DrawableFactoryInterface;
+use Intervention\Image\Interfaces\DrawableInterface;
 
-class PolygonFactory
+class PolygonFactory implements DrawableFactoryInterface
 {
     protected Polygon $polygon;
 
     /**
      * Create new factory instance
      *
-     * @param callable|Polygon $init
      * @return void
      */
-    public function __construct(callable|Polygon $init)
+    public function __construct(null|Closure|Polygon $init = null)
     {
         $this->polygon = is_a($init, Polygon::class) ? $init : new Polygon([]);
 
@@ -27,11 +29,27 @@ class PolygonFactory
     }
 
     /**
-     * Add a point to the polygon to be produced
+     * {@inheritdoc}
      *
-     * @param int $x
-     * @param int $y
-     * @return PolygonFactory
+     * @see DrawableFactoryInterface::init()
+     */
+    public static function init(null|Closure|DrawableInterface $init = null): self
+    {
+        return new self($init);
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @see DrawableFactoryInterface::create()
+     */
+    public function create(): DrawableInterface
+    {
+        return $this->polygon;
+    }
+
+    /**
+     * Add a point to the polygon to be produced
      */
     public function point(int $x, int $y): self
     {
@@ -42,9 +60,6 @@ class PolygonFactory
 
     /**
      * Set the background color of the polygon to be produced
-     *
-     * @param mixed $color
-     * @return PolygonFactory
      */
     public function background(mixed $color): self
     {
@@ -55,10 +70,6 @@ class PolygonFactory
 
     /**
      * Set the border color & border size of the polygon to be produced
-     *
-     * @param mixed $color
-     * @param int $size
-     * @return PolygonFactory
      */
     public function border(mixed $color, int $size = 1): self
     {
@@ -69,8 +80,6 @@ class PolygonFactory
 
     /**
      * Produce the polygon
-     *
-     * @return Polygon
      */
     public function __invoke(): Polygon
     {

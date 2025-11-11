@@ -8,7 +8,7 @@
 
 <x-core::form
     method="post"
-    :url="route('data-synchronize.upload')"
+    :url="$importer->getUploadUrl()"
     :data-validate-url="$importer->getValidateUrl()"
     :data-import-url="$importer->getImportUrl()"
     data-bb-toggle="import-form"
@@ -53,6 +53,8 @@
 
             {!! apply_filters('data_synchronize_import_form_before', null, $importer) !!}
 
+            @yield('import_extra_form_before')
+
             <div class="mb-3">
                 <div class="dropzone">
                     <div class="dz-message">
@@ -75,6 +77,8 @@
 
             {!! apply_filters('data_synchronize_import_form_after', null, $importer) !!}
 
+            @yield('import_extra_form_after')
+
             <pre class="mt-3 data-synchronize-import-output" style="display: none"></pre>
         </x-core::card.body>
         <x-core::card.footer>
@@ -87,7 +91,43 @@
     <x-core::alert class="mt-3" type="danger" style="display: none" data-bb-toggle="import-errors">
         <ul></ul>
     </x-core::alert>
+
+    <x-core::card class="mt-3 bg-warning-lt" data-bb-toggle="import-failures" style="display: none">
+        <x-core::card.header>
+            <x-core::card.title>
+                {{ trans('packages/data-synchronize::data-synchronize.import.failures.title') }}
+            </x-core::card.title>
+        </x-core::card.header>
+        <x-core::table>
+            <x-core::table.header>
+                <x-core::table.header.cell>
+                    #
+                </x-core::table.header.cell>
+                <x-core::table.header.cell>
+                    {{ trans('packages/data-synchronize::data-synchronize.import.failures.attribute') }}
+                </x-core::table.header.cell>
+                <x-core::table.header.cell>
+                    {{ trans('packages/data-synchronize::data-synchronize.import.failures.errors') }}
+                </x-core::table.header.cell>
+            </x-core::table.header>
+            <x-core::table.body></x-core::table.body>
+        </x-core::table>
+    </x-core::card>
 </x-core::form>
+
+<template id="failures-template">
+    <x-core::table.body.row>
+        <x-core::table.body.cell>
+            __index__
+        </x-core::table.body.cell>
+        <x-core::table.body.cell>
+            __attribute__
+        </x-core::table.body.cell>
+        <x-core::table.body.cell>
+            __errors__
+        </x-core::table.body.cell>
+    </x-core::table.body.row>
+</template>
 
 {!! apply_filters('data_synchronize_import_page_after', null, $importer) !!}
 

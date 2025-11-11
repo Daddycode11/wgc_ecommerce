@@ -16,6 +16,8 @@ return new class extends Migration
             $table->unsignedBigInteger('wallet_id');
             $table->decimal('amount', 15, 2)->default(0)->nullable(); 
             $table->text('description')->nullable(); 
+            $table->string('reference');
+            $table->string('status')->default('pending');
             $table->timestamps();
         });
     }

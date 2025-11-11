@@ -4,20 +4,22 @@ declare(strict_types=1);
 
 namespace Intervention\Image\Geometry\Factories;
 
+use Closure;
 use Intervention\Image\Geometry\Point;
 use Intervention\Image\Geometry\Line;
+use Intervention\Image\Interfaces\DrawableFactoryInterface;
+use Intervention\Image\Interfaces\DrawableInterface;
 
-class LineFactory
+class LineFactory implements DrawableFactoryInterface
 {
     protected Line $line;
 
     /**
      * Create the factory instance
      *
-     * @param callable|Line $init
      * @return void
      */
-    public function __construct(callable|Line $init)
+    public function __construct(null|Closure|Line $init = null)
     {
         $this->line = is_a($init, Line::class) ? $init : new Line(new Point(), new Point());
 
@@ -27,10 +29,27 @@ class LineFactory
     }
 
     /**
-     * Set the color of the line to be produced
+     * {@inheritdoc}
      *
-     * @param mixed $color
-     * @return LineFactory
+     * @see DrawableFactoryInterface::init()
+     */
+    public static function init(null|Closure|DrawableInterface $init = null): self
+    {
+        return new self($init);
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @see DrawableFactoryInterface::create()
+     */
+    public function create(): DrawableInterface
+    {
+        return $this->line;
+    }
+
+    /**
+     * Set the color of the line to be produced
      */
     public function color(mixed $color): self
     {
@@ -42,9 +61,6 @@ class LineFactory
 
     /**
      * Set the (background) color of the line to be produced
-     *
-     * @param mixed $color
-     * @return LineFactory
      */
     public function background(mixed $color): self
     {
@@ -56,10 +72,6 @@ class LineFactory
 
     /**
      * Set the border size & border color of the line to be produced
-     *
-     * @param mixed $color
-     * @param int $size
-     * @return LineFactory
      */
     public function border(mixed $color, int $size = 1): self
     {
@@ -72,9 +84,6 @@ class LineFactory
 
     /**
      * Set the width of the line to be produced
-     *
-     * @param int $size
-     * @return LineFactory
      */
     public function width(int $size): self
     {
@@ -85,10 +94,6 @@ class LineFactory
 
     /**
      * Set the coordinates of the starting point of the line to be produced
-     *
-     * @param int $x
-     * @param int $y
-     * @return LineFactory
      */
     public function from(int $x, int $y): self
     {
@@ -99,10 +104,6 @@ class LineFactory
 
     /**
      * Set the coordinates of the end point of the line to be produced
-     *
-     * @param int $x
-     * @param int $y
-     * @return LineFactory
      */
     public function to(int $x, int $y): self
     {
@@ -113,8 +114,6 @@ class LineFactory
 
     /**
      * Produce the line
-     *
-     * @return Line
      */
     public function __invoke(): Line
     {

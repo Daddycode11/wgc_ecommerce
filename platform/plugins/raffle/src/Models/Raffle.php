@@ -21,6 +21,7 @@ class Raffle extends BaseModel
         'ticket_price',
         'status',
         'is_featured',
+        'winner_code',
     ];
 
     protected $casts = [

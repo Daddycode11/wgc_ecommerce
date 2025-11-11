@@ -4,9 +4,11 @@
 <div class="container-fluid">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <h4 class="fw-bold">🪙 Bidding Systems</h4>
+        <div>
         <a href="{{ route('bidding-system.create') }}" class="btn btn-primary">
             <i class="fa fa-plus"></i> Create New
         </a>
+        <button class="btn btn-success" onclick="updateBidWinners()">Update Bid Winners</button></div>
     </div>
 
     @if(session('success'))
@@ -23,7 +25,9 @@
                         <th>Product</th>
                         <th>Starting Price</th>
                         <th>Min Increment</th>
+                        <th>End Time</th>
                         <th>Status</th>
+                        <th>Winner Name</th>
                         <th>Actions</th>
                     </tr>
                 </thead>
@@ -41,16 +45,23 @@
                             <td>{{ $bidding->product->name ?? '—' }}</td>
                             <td>₱{{ number_format($bidding->starting_price, 2) }}</td>
                             <td>₱{{ number_format($bidding->min_bid_increment, 2) }}</td>
+                            <td>{{ $bidding->end_time }}</td>
                             <td>
                                 <form action="{{ route('bidding-system.update', $bidding->id) }}" method="POST" class="d-inline">
                                     @csrf
                                     @method('PUT')
                                     <input type="hidden" name="is_published" value="{{ $bidding->is_published ? 0 : 1 }}">
+                                    <input type="hidden" name="title" value="{{ $bidding->title }}">
+                                    <input type="hidden" name="product_id" value="{{ $bidding->product_id }}">
+                                    <input type="hidden" name="starting_price" value="{{ $bidding->starting_price }}">
+                                    <input type="hidden" name="min_bid_increment" value="{{ $bidding->min_bid_increment }}">  
+                                    <input type="hidden" name="min_bid_increment" value="{{ $bidding->end_time }}">  
                                     <button class="btn btn-sm {{ $bidding->is_published ? 'btn-success' : 'btn-secondary' }}">
                                         {{ $bidding->is_published ? 'Published' : 'Unpublished' }}
                                     </button>
                                 </form>
                             </td>
+                            <td>{{ $bidding->winner_name }}</td>
                             <td>
                                 <a href="{{ route('bidding-system.edit', $bidding->id) }}" class="btn btn-sm btn-warning">
                                     <i class="fa fa-edit"></i> Edit
@@ -93,5 +104,25 @@
             </table>
         </div>
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        async function updateBidWinners() {
+            alert("Sdfds")
+          await  fetch('{{ route('UpdateBidWinner') }}', {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                Swal.fire({title: 'Success', text: data.message, icon: 'success'});
+            })
+            .catch(error => {
+                Swal.fire({title: 'Error', text: 'An error occurred while updating bid winners.', icon: 'error'});
+            })
+        }
+    </script>
 </div>
 @endsection

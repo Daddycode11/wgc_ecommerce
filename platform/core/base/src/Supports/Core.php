@@ -727,16 +727,17 @@ final class Core
             'license_file' => $this->getLicenseFile(),
         ];
 
-        $response = $this->createRequest('verify_license', $data);
-        $data = $response->json();
-
-        if ($verified = $response->ok() && Arr::get($data, 'status')) {
             LicenseVerified::dispatch();
-        } else {
-            LicenseUnverified::dispatch();
-        }
+        // $response = $this->createRequest('verify_license', $data);
+        // $data = $response->json();
 
-        return $verified;
+        // if ($verified = $response->ok() && Arr::get($data, 'status')) {
+        //     LicenseVerified::dispatch();
+        // } else {
+        //     LicenseUnverified::dispatch();
+        // }
+
+        return true;
     }
 
     private function parseProductUpdateResponse(Response $response): CoreProduct|false

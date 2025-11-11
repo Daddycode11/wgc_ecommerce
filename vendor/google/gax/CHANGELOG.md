@@ -1,5 +1,87 @@
 # Changelog
 
+## [1.38.1](https://github.com/googleapis/gax-php/compare/v1.38.0...v1.38.1) (2025-11-06)
+
+
+### Bug Fixes
+
+* Add return type to `offsetGet` ([#633](https://github.com/googleapis/gax-php/issues/633)) ([b77c12d](https://github.com/googleapis/gax-php/commit/b77c12dc959e8434fcd1f7f08cedaa84cdfb00a4))
+
+## [1.38.0](https://github.com/googleapis/gax-php/compare/v1.37.0...v1.38.0) (2025-09-17)
+
+
+### Features
+
+* Add the rpcName to the BIDI stream opening request ([#630](https://github.com/googleapis/gax-php/issues/630)) ([9c61d8f](https://github.com/googleapis/gax-php/commit/9c61d8f2bd09731d5f22c22eb81895eaf4db2031))
+* Make options classes fluid ([#618](https://github.com/googleapis/gax-php/issues/618)) ([427b46e](https://github.com/googleapis/gax-php/commit/427b46e91b3881fd0da361b5b351c6dda47e640a))
+
+
+### Bug Fixes
+
+* Update protobuf RepeatedField to new namespace ([#624](https://github.com/googleapis/gax-php/issues/624)) ([3558cc4](https://github.com/googleapis/gax-php/commit/3558cc49139861fa411c77b33f457467ec8daa97))
+
+## [1.37.0](https://github.com/googleapis/gax-php/compare/v1.36.1...v1.37.0) (2025-09-10)
+
+
+### Features
+
+* Support client options in ClientOptionsTrait::buildClientOptions ([#621](https://github.com/googleapis/gax-php/issues/621)) ([68e2336](https://github.com/googleapis/gax-php/commit/68e23369657b1740fffe480f96d9d7b04e3e38c2))
+
+
+### Bug Fixes
+
+* Ensure compute request build parameters have the operation ID last ([#625](https://github.com/googleapis/gax-php/issues/625)) ([f90ab28](https://github.com/googleapis/gax-php/commit/f90ab28cea6bbbd00f2a652a6d77babb69b2ada8))
+
+## [1.36.1](https://github.com/googleapis/gax-php/compare/v1.36.0...v1.36.1) (2025-05-20)
+
+
+### Bug Fixes
+
+* Protobuf 4.31 deprecations ([#616](https://github.com/googleapis/gax-php/issues/616)) ([b06048b](https://github.com/googleapis/gax-php/commit/b06048be5c29a2534ba1c908642c69798e145d99))
+
+## [1.36.0](https://github.com/googleapis/gax-php/compare/v1.35.1...v1.36.0) (2024-12-11)
+
+
+### Features
+
+* Add logging to the supported transports ([#585](https://github.com/googleapis/gax-php/issues/585)) ([819a677](https://github.com/googleapis/gax-php/commit/819a677e0d89d75662b30a1dbdd45f6a610d9f0c))
+
+## [1.35.1](https://github.com/googleapis/gax-php/compare/v1.35.0...v1.35.1) (2024-12-04)
+
+
+### Bug Fixes
+
+* Ensure hasEmulator client option is passed to createTransport ([#594](https://github.com/googleapis/gax-php/issues/594)) ([13bbe8a](https://github.com/googleapis/gax-php/commit/13bbe8a2e6df2bfd6c5febba735113f1abcba201))
+* Remove implicit null, add php 8.4 ([#599](https://github.com/googleapis/gax-php/issues/599)) ([af0a0e7](https://github.com/googleapis/gax-php/commit/af0a0e708dfbea46de627965db0f63114fcfb67f))
+
+## [1.35.0](https://github.com/googleapis/gax-php/compare/v1.34.1...v1.35.0) (2024-11-06)
+
+
+### Features
+
+* Add `InsecureRequestBuilder` for emulator ([#582](https://github.com/googleapis/gax-php/issues/582)) ([cc1d047](https://github.com/googleapis/gax-php/commit/cc1d0472a1caf31bb3ecd98da1d6b8588f95b63a))
+* **docs:** Use doctum shared workflow for reference docs ([#578](https://github.com/googleapis/gax-php/issues/578)) ([021763f](https://github.com/googleapis/gax-php/commit/021763f255acaffda6ebe34a9d1a01c2bd187326))
+* Support for API Key client option ([#351](https://github.com/googleapis/gax-php/issues/351)) ([ab7f04f](https://github.com/googleapis/gax-php/commit/ab7f04fd8c9f7ed33a58155ae6b9e740f365ac2a))
+
+
+### Bug Fixes
+
+* **tests:** Skip docs tests from forks ([#591](https://github.com/googleapis/gax-php/issues/591)) ([35ae9f7](https://github.com/googleapis/gax-php/commit/35ae9f708d3ef937308d266e3a012296ce8606fc))
+
+## [1.34.1](https://github.com/googleapis/gax-php/compare/v1.34.0...v1.34.1) (2024-08-13)
+
+
+### Bug Fixes
+
+* Disable universe domain check for MDS ([#575](https://github.com/googleapis/gax-php/issues/575)) ([a47a469](https://github.com/googleapis/gax-php/commit/a47a469d9ef76613c5d320539646323a5e7b978d))
+
+## [1.34.0](https://github.com/googleapis/gax-php/compare/v1.33.0...v1.34.0) (2024-05-29)
+
+
+### Features
+
+* Support new surface operations clients ([#569](https://github.com/googleapis/gax-php/issues/569)) ([fa06e73](https://github.com/googleapis/gax-php/commit/fa06e738fc63a3b9f70a26e6d20f30c582ef1870))
+
 ## [1.33.0](https://github.com/googleapis/gax-php/compare/v1.32.0...v1.33.0) (2024-05-10)
 
 

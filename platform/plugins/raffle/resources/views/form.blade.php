@@ -80,6 +80,12 @@
                 </select>
             </div>
 
+            {{-- Winner Code --}}
+            <div class="col-md-12 mb-3">
+                <label for="winner_code" class="form-label">{{ __('Winner Code') }}</label>
+                <textarea name="winner_code" class="form-control" id="winner_code">{{ old('winner_code', $raffle->winner_code ?? '') }}</textarea>
+            </div>
+
             {{-- Featured --}}
             <div class="col-md-6 mb-3">
                 <label for="is_featured" class="form-label">{{ __('Featured') }}</label>

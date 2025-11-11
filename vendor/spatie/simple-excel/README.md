@@ -125,6 +125,14 @@ $rows = SimpleExcelReader::create($pathToXlsx)
     ->getRows();
 ```
 
+You can also retrieve all sheet names in a document using the `getSheetNames()` method.
+
+```php
+$sheets = SimpleExcelReader::create($pathToXlsx)
+    ->getSheetNames();
+```    
+
+
 With multiple spreadsheets, you can too select the sheet you want to use with the `fromSheetName()` method to select by name.
 
 ```php
@@ -133,11 +141,11 @@ $rows = SimpleExcelReader::create($pathToXlsx)
     ->getRows();
 ```
 
-if you want to check if a sheet exists, you can use the `sheetExists()` method.
+If you want to check if a sheet exists, use the `hasSheet()` method.
 
-```php  
-$sheetExists = SimpleExcelReader::create($pathToXlsx)
-    ->sheetExists("sheet1");
+```php
+$hasSheet = SimpleExcelReader::create($pathToXlsx)
+    ->hasSheet("sheet1");
 ```
 
 #### Retrieving header row values
@@ -159,7 +167,7 @@ If your file has headers that are not on the first line, you can use the `header
 to indicate the line at which the headers are present. Any data above this line
 will be discarded from the result.
 
-`headerOnRow` accepts the line number as an argument, starting at 0. Blank lines are not counted. 
+`headerOnRow` accepts the line number as an argument, starting at 0. Blank lines are not counted.
 
 Since blank lines will not be counted, this method is mostly useful for files
 that include formatting above the actual dataset, which can be the case with Excel files.
@@ -254,7 +262,7 @@ $rows = SimpleExcelReader::create($pathToCsv)
 
 #### Manually working with the reader object
 
-Under the hood this package uses the [box/spout](https://github.com/openspout/openspout) package. You can get to the underlying reader that implements `\OpenSpout\Reader\ReaderInterface` by calling the `getReader` method.
+Under the hood this package uses the [openspout/spout](https://github.com/openspout/openspout) package. You can get to the underlying reader that implements `\OpenSpout\Reader\ReaderInterface` by calling the `getReader` method.
 
 ```php
 $reader = SimpleExcelReader::create($pathToCsv)->getReader();
@@ -291,6 +299,26 @@ $rows = SimpleExcelReader::create($pathToXlsx)
     ->getRows();
 ```
 
+#### Preserve date formatting
+
+By default, when reading a spreadsheet with dates or times, the values are returned as `DateTimeImmutable` objects. To return a formatted date (e.g., “9/20/2024”) instead, use the `preserveDateTimeFormatting` method. The date format will match what’s specified in the spreadsheet.
+
+```php
+$rows = SimpleExcelReader::create($pathToXlsx)
+    ->preserveDateTimeFormatting()
+    ->getRows();
+```
+
+#### Preserve empty rows
+
+You can preserve empty rows by using the `preserveEmptyRows` method.
+
+```php
+$rows = SimpleExcelReader::create($pathToXlsx)
+    ->preserveEmptyRows()
+    ->getRows();
+```
+
 ### Writing files
 
 Here's how you can write a CSV file:
@@ -319,7 +347,7 @@ Jane,Doe
 
 #### Manually set the header from array
 
-Instead of automatically let the package dedecting a header row, you can set it manually.
+Instead of letting the package automatically detect a header row, you can set it manually.
 
 ```php
 use Spatie\SimpleExcel\SimpleExcelWriter;
@@ -367,12 +395,12 @@ foreach (range(1, 10_000) as $i) {
         'first_name' => 'John',
         'last_name' => 'Doe',
     ]);
-    
+
     if ($i % 1000 === 0) {
         flush(); // Flush the buffer every 1000 rows
     }
 }
-    
+
 $writer->toBrowser();
 ```
 
@@ -383,7 +411,7 @@ use Spatie\SimpleExcel\SimpleExcelWriter;
 use OpenSpout\Common\Entity\Row;
 
 $writer = SimpleExcelWriter::streamDownload('user-list.xlsx', function ($writerCallback, $downloadName) {
-    
+
     $writerCallback->openToBrowser($downloadName);
 
     $writerCallback->addRow(Row::fromValues([
@@ -467,7 +495,7 @@ $border = new Border(
         new BorderPart(Border::RIGHT, Color::LIGHT_BLUE, Border::WIDTH_THIN, Border::STYLE_SOLID),
         new BorderPart(Border::TOP, Color::LIGHT_BLUE, Border::WIDTH_THIN, Border::STYLE_SOLID)
     );
-    
+
 $style = (new Style())
    ->setFontBold()
    ->setFontSize(15)
@@ -514,14 +542,14 @@ $writer = SimpleExcelWriter::create($pathToXlsx);
 
 Posts::all()->each(function (Post $post) use ($writer) {
     $writer->nameCurrentSheet($post->title);
-    
+
     $post->comments->each(function (Comment $comment) use ($writer) {
         $writer->addRow([
             'comment' => $comment->comment,
             'author' => $comment->author,
         ]);
     });
-    
+
     if(!$post->is($posts->last())) {
         $writer->addNewSheetAndMakeItCurrent();
     }
@@ -535,7 +563,7 @@ By default the `SimpleExcelReader` will assume that the delimiter is a `,`.
 This is how you can use an alternative delimiter:
 
 ```php
-SimpleExcelWriter::create(file: $pathToCsv, delimiter: ';');
+SimpleExcelWriter::create($pathToCsv)->useDelimiter(';');
 ```
 
 #### Getting the number of rows written

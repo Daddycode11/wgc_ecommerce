@@ -7,50 +7,39 @@ namespace Intervention\Image\Drivers\Gd\Decoders;
 use Intervention\Image\Drivers\SpecializableDecoder;
 use Intervention\Image\Exceptions\DecoderException;
 use Intervention\Image\Interfaces\SpecializedInterface;
+use Intervention\Image\MediaType;
 
 abstract class AbstractDecoder extends SpecializableDecoder implements SpecializedInterface
 {
     /**
      * Return media (mime) type of the file at given file path
      *
-     * @param string $filepath
      * @throws DecoderException
-     * @return string
      */
-    protected function getMediaTypeByFilePath(string $filepath): string
+    protected function getMediaTypeByFilePath(string $filepath): MediaType
     {
         $info = @getimagesize($filepath);
 
         if (!is_array($info)) {
-            throw new DecoderException('Unable to decode input');
+            throw new DecoderException('Unable to detect media (MIME) from data in file path.');
         }
 
-        if (!array_key_exists('mime', $info)) {
-            throw new DecoderException('Unable to decode input');
-        }
-
-        return $info['mime'];
+        return MediaType::from($info['mime']);
     }
 
     /**
      * Return media (mime) type of the given image data
      *
-     * @param string $data
      * @throws DecoderException
-     * @return string
      */
-    protected function getMediaTypeByBinary(string $data): string
+    protected function getMediaTypeByBinary(string $data): MediaType
     {
         $info = @getimagesizefromstring($data);
 
         if (!is_array($info)) {
-            throw new DecoderException('Unable to decode input');
+            throw new DecoderException('Unable to detect media (MIME) from binary data.');
         }
 
-        if (!array_key_exists('mime', $info)) {
-            throw new DecoderException('Unable to decode input');
-        }
-
-        return $info['mime'];
+        return MediaType::from($info['mime']);
     }
 }

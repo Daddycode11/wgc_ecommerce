@@ -9,7 +9,7 @@ use Intervention\Image\Colors\Rgb\Channels\Blue;
 use Intervention\Image\Colors\Rgb\Channels\Green;
 use Intervention\Image\Colors\Rgb\Channels\Red;
 use Intervention\Image\Colors\Rgb\Channels\Alpha;
-use Intervention\Image\Drivers\AbstractInputHandler;
+use Intervention\Image\InputHandler;
 use Intervention\Image\Interfaces\ColorChannelInterface;
 use Intervention\Image\Interfaces\ColorInterface;
 use Intervention\Image\Interfaces\ColorspaceInterface;
@@ -19,10 +19,6 @@ class Color extends AbstractColor
     /**
      * Create new instance
      *
-     * @param int $r
-     * @param int $g
-     * @param int $b
-     * @param int $a
      * @return ColorInterface
      */
     public function __construct(int $r, int $g, int $b, int $a = 255)
@@ -53,20 +49,16 @@ class Color extends AbstractColor
      */
     public static function create(mixed $input): ColorInterface
     {
-        return (new class ([
+        return InputHandler::withDecoders([
             Decoders\HexColorDecoder::class,
             Decoders\StringColorDecoder::class,
             Decoders\TransparentColorDecoder::class,
             Decoders\HtmlColornameDecoder::class,
-        ]) extends AbstractInputHandler
-        {
-        })->handle($input);
+        ])->handle($input);
     }
 
     /**
      * Return the RGB red color channel
-     *
-     * @return ColorChannelInterface
      */
     public function red(): ColorChannelInterface
     {
@@ -76,8 +68,6 @@ class Color extends AbstractColor
 
     /**
      * Return the RGB green color channel
-     *
-     * @return ColorChannelInterface
      */
     public function green(): ColorChannelInterface
     {
@@ -87,8 +77,6 @@ class Color extends AbstractColor
 
     /**
      * Return the RGB blue color channel
-     *
-     * @return ColorChannelInterface
      */
     public function blue(): ColorChannelInterface
     {
@@ -98,8 +86,6 @@ class Color extends AbstractColor
 
     /**
      * Return the colors alpha channel
-     *
-     * @return ColorChannelInterface
      */
     public function alpha(): ColorChannelInterface
     {
@@ -179,5 +165,15 @@ class Color extends AbstractColor
     public function isTransparent(): bool
     {
         return $this->alpha()->value() < $this->alpha()->max();
+    }
+
+    /**
+     * {@inheritdoc}
+     *
+     * @see ColorInterface::isClear()
+     */
+    public function isClear(): bool
+    {
+        return $this->alpha()->value() == 0;
     }
 }

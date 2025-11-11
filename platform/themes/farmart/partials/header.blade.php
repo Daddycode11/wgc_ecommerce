@@ -1,19 +1,12 @@
 <!DOCTYPE html>
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+
 <head>
     <meta charset="utf-8">
-    <meta
-        http-equiv="X-UA-Compatible"
-        content="IE=edge"
-    >
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=5, user-scalable=1"
-    />
-    <meta
-        name="csrf-token"
-        content="{{ csrf_token() }}"
-    >
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1, minimum-scale=1, maximum-scale=5, user-scalable=1" />
+    <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <style>
         :root {
@@ -40,24 +33,19 @@
 
     @php
         Theme::asset()->remove('language-css');
-        Theme::asset()
-            ->container('footer')
-            ->remove('language-public-js');
-        Theme::asset()
-            ->container('footer')
-            ->remove('simple-slider-owl-carousel-css');
-        Theme::asset()
-            ->container('footer')
-            ->remove('simple-slider-owl-carousel-js');
-        Theme::asset()
-            ->container('footer')
-            ->remove('simple-slider-css');
-        Theme::asset()
-            ->container('footer')
-            ->remove('simple-slider-js');
+        Theme::asset()->container('footer')->remove('language-public-js');
+        Theme::asset()->container('footer')->remove('simple-slider-owl-carousel-css');
+        Theme::asset()->container('footer')->remove('simple-slider-owl-carousel-js');
+        Theme::asset()->container('footer')->remove('simple-slider-css');
+        Theme::asset()->container('footer')->remove('simple-slider-js');
     @endphp
 
     {!! Theme::header() !!}
+    {{-- Sweet alert --}}
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"
+        integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g=="
+        crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 </head>
 
 <body {!! Theme::bodyAttributes() !!}>
@@ -68,10 +56,8 @@
     {!! Theme::partial('svg-icons') !!}
     {!! apply_filters(THEME_FRONT_BODY, null) !!}
 
-    <header
-        class="header header-js-handler"
-        data-sticky="{{ theme_option('sticky_header_enabled', 'yes') == 'yes' ? 'true' : 'false' }}"
-    >
+    <header class="header header-js-handler"
+        data-sticky="{{ theme_option('sticky_header_enabled', 'yes') == 'yes' ? 'true' : 'false' }}">
         <div @class([
             'header-top d-none d-lg-block',
             'header-content-sticky' =>
@@ -87,6 +73,43 @@
                         </div>
                         <div class="col-6">
                             <div class="header-info header-info-right">
+                                @if (auth('customer')->check())
+                                    <span class="mr-4 pe-auto" data-bs-toggle="modal"
+                                        data-bs-target="#exampleModal" id="points">₱0.00</span>
+                                    <!-- Button trigger modal -->
+                                    <input type="hidden" name="customer_id" id="customer_id"
+                                        value="{{ auth('customer')->user()->id }}">
+
+                                    <!-- Modal -->
+                                    <div class="modal fade" id="exampleModal" tabindex="-1"
+                                        aria-labelledby="exampleModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h1 class="modal-title fs-5" id="exampleModalLabel">Top Up form</h1>
+                                                    <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                                        aria-label="Close"></button>
+                                                </div>
+                                                <form id="topup-form">
+                                                    <div class="modal-body">
+                                                        <div class="input-group input-group-sm mb-3">
+                                                            <span class="input-group-text">Amount</span>
+                                                            <input type="text" class="form-control"
+                                                            required placeholder="Enter Amount"
+                                                                aria-label="Sizing example input" id="amount">
+                                                        </div>
+                                                    </div>
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="btn btn-secondary"
+                                                            data-bs-dismiss="modal">Close</button>
+                                                        <button type="submit" class="btn btn-primary">Save
+                                                            changes</button>
+                                                    </div>
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                @endif
                                 <ul>
                                     @if (is_plugin_active('language'))
                                         {!! Theme::partial('language-switcher') !!}
@@ -94,17 +117,12 @@
                                     @if (is_plugin_active('ecommerce'))
                                         @if (count($currencies) > 1)
                                             <li>
-                                                <a
-                                                    class="language-dropdown-active"
-                                                    href="#"
-                                                >
+                                                <a class="language-dropdown-active" href="#">
                                                     <span>{{ get_application_currency()->title }}</span>
                                                     <span class="svg-icon">
                                                         <svg>
-                                                            <use
-                                                                href="#svg-icon-chevron-down"
-                                                                xlink:href="#svg-icon-chevron-down"
-                                                            ></use>
+                                                            <use href="#svg-icon-chevron-down"
+                                                                xlink:href="#svg-icon-chevron-down"></use>
                                                         </svg>
                                                     </span>
                                                 </a>
@@ -126,10 +144,8 @@
                                             <li>
                                                 <a
                                                     href="{{ route('customer.overview') }}">{{ auth('customer')->user()->name }}</a>
-                                                <span class="d-inline-block ms-1">(<a
-                                                        class="color-primary"
-                                                        href="{{ route('customer.logout') }}"
-                                                    >{{ __('Logout') }}</a>)</span>
+                                                <span class="d-inline-block ms-1">(<a class="color-primary"
+                                                        href="{{ route('customer.logout') }}">{{ __('Logout') }}</a>)</span>
                                             </li>
                                         @else
                                             <li><a href="{{ route('customer.login') }}">{{ __('Login') }}</a></li>
@@ -171,38 +187,26 @@
                     <div class="header-items header__center">
                         @if (is_plugin_active('ecommerce'))
                             <x-plugins-ecommerce::fronts.ajax-search class="form--quick-search">
-                                <div
-                                    class="form-group--icon"
-                                    style="display: none"
-                                >
+                                <div class="form-group--icon" style="display: none">
                                     <div class="product-category-label">
-                                        <label for="product-category-select" class="text">{{ __('All Categories') }}</label>
+                                        <label for="product-category-select"
+                                            class="text">{{ __('All Categories') }}</label>
                                         <span class="svg-icon">
                                             <svg>
-                                                <use
-                                                    href="#svg-icon-chevron-down"
-                                                    xlink:href="#svg-icon-chevron-down"
-                                                ></use>
+                                                <use href="#svg-icon-chevron-down" xlink:href="#svg-icon-chevron-down">
+                                                </use>
                                             </svg>
                                         </span>
                                     </div>
                                     <x-plugins-ecommerce::fronts.ajax-search.categories-dropdown
-                                        class="form-control product-category-select"
-                                        id="product-category-select"
-                                    />
+                                        class="form-control product-category-select" id="product-category-select" />
                                 </div>
-                                <x-plugins-ecommerce::fronts.ajax-search.input type="text" class="form-control input-search-product" />
-                                <button
-                                    class="btn"
-                                    type="submit"
-                                    aria-label="Submit"
-                                >
+                                <x-plugins-ecommerce::fronts.ajax-search.input type="text"
+                                    class="form-control input-search-product" />
+                                <button class="btn" type="submit" aria-label="Submit">
                                     <span class="svg-icon">
                                         <svg>
-                                            <use
-                                                href="#svg-icon-search"
-                                                xlink:href="#svg-icon-search"
-                                            ></use>
+                                            <use href="#svg-icon-search" xlink:href="#svg-icon-search"></use>
                                         </svg>
                                     </span>
                                 </button>
@@ -222,10 +226,7 @@
                         @if (is_plugin_active('ecommerce'))
                             @if (EcommerceHelper::isCompareEnabled())
                                 <div class="header__extra header-compare">
-                                    <a
-                                        class="btn-compare"
-                                        href="{{ route('public.compare') }}"
-                                    >
+                                    <a class="btn-compare" href="{{ route('public.compare') }}">
                                         <i class="icon-repeat"></i>
                                         <span
                                             class="header-item-counter">{{ Cart::instance('compare')->count() }}</span>
@@ -234,41 +235,25 @@
                             @endif
                             @if (EcommerceHelper::isWishlistEnabled())
                                 <div class="header__extra header-wishlist">
-                                    <a
-                                        class="btn-wishlist"
-                                        href="{{ route('public.wishlist') }}"
-                                    >
+                                    <a class="btn-wishlist" href="{{ route('public.wishlist') }}">
                                         <span class="svg-icon">
                                             <svg>
-                                                <use
-                                                    href="#svg-icon-wishlist"
-                                                    xlink:href="#svg-icon-wishlist"
-                                                ></use>
+                                                <use href="#svg-icon-wishlist" xlink:href="#svg-icon-wishlist"></use>
                                             </svg>
                                         </span>
                                         <span class="header-item-counter">
-                                            {{ auth('customer')->check()? auth('customer')->user()->wishlist()->count(): Cart::instance('wishlist')->count() }}
+                                            {{ auth('customer')->check() ? auth('customer')->user()->wishlist()->count() : Cart::instance('wishlist')->count() }}
                                         </span>
                                     </a>
                                 </div>
                             @endif
                             @if (EcommerceHelper::isCartEnabled())
-                                <div
-                                    class="header__extra cart--mini"
-                                    role="button"
-                                    tabindex="0"
-                                >
+                                <div class="header__extra cart--mini" role="button" tabindex="0">
                                     <div class="header__extra">
-                                        <a
-                                            class="btn-shopping-cart"
-                                            href="{{ route('public.cart') }}"
-                                        >
+                                        <a class="btn-shopping-cart" href="{{ route('public.cart') }}">
                                             <span class="svg-icon">
                                                 <svg>
-                                                    <use
-                                                        href="#svg-icon-cart"
-                                                        xlink:href="#svg-icon-cart"
-                                                    ></use>
+                                                    <use href="#svg-icon-cart" xlink:href="#svg-icon-cart"></use>
                                                 </svg>
                                             </span>
                                             <span
@@ -285,10 +270,7 @@
                                             </span>
                                         </span>
                                     </div>
-                                    <div
-                                        class="cart__content"
-                                        id="cart-mobile"
-                                    >
+                                    <div class="cart__content" id="cart-mobile">
                                         <div class="backdrop"></div>
                                         <div class="mini-cart-content">
                                             <div class="widget-shopping-cart-content">
@@ -317,26 +299,24 @@
                                     <div class="menu__toggle">
                                         <span class="svg-icon">
                                             <svg>
-                                                <use
-                                                    href="#svg-icon-list"
-                                                    xlink:href="#svg-icon-list"
-                                                ></use>
+                                                <use href="#svg-icon-list" xlink:href="#svg-icon-list"></use>
                                             </svg>
                                         </span>
                                         <span class="menu__toggle-title">{{ __('Shop by Category') }}</span>
                                     </div>
-                                    <div
-                                        class="menu__content"
-                                        data-bb-toggle="init-categories-dropdown"
+                                    <div class="menu__content" data-bb-toggle="init-categories-dropdown"
                                         data-bb-target=".menu--dropdown"
-                                        data-url="{{ route('public.ajax.categories-dropdown') }}"
-                                    >
+                                        data-url="{{ route('public.ajax.categories-dropdown') }}">
                                         <ul class="menu--dropdown"></ul>
                                     </div>
                                 </div>
                             @endif
                         </div>
-                        <div @class(['navigation__center', 'ps-0' => theme_option('enabled_product_categories_on_header', 'yes') != 'yes'])>
+                        <div @class([
+                            'navigation__center',
+                            'ps-0' =>
+                                theme_option('enabled_product_categories_on_header', 'yes') != 'yes',
+                        ])>
                             {!! Menu::renderMenuLocation('main-menu', [
                                 'view' => 'menu',
                                 'options' => ['class' => 'menu'],
@@ -344,18 +324,12 @@
                         </div>
                         <div class="navigation__right">
                             @if (is_plugin_active('ecommerce') && EcommerceHelper::isEnabledCustomerRecentlyViewedProducts())
-                                <div
-                                    class="header-recently-viewed"
-                                    data-url="{{ route('public.ajax.recently-viewed-products') }}"
-                                    role="button"
-                                >
+                                <div class="header-recently-viewed"
+                                    data-url="{{ route('public.ajax.recently-viewed-products') }}" role="button">
                                     <h3 class="recently-title">
                                         <span class="svg-icon recent-icon">
                                             <svg>
-                                                <use
-                                                    href="#svg-icon-refresh"
-                                                    xlink:href="#svg-icon-refresh"
-                                                ></use>
+                                                <use href="#svg-icon-refresh" xlink:href="#svg-icon-refresh"></use>
                                             </svg>
                                         </span>
                                         {{ __('Recently Viewed') }}
@@ -375,23 +349,15 @@
                 </nav>
             </div>
         </div>
-        <div
-            class="header-mobile header-js-handler"
-            data-sticky="{{ theme_option('sticky_header_mobile_enabled', 'yes') == 'yes' ? 'true' : 'false' }}"
-        >
+        <div class="header-mobile header-js-handler"
+            data-sticky="{{ theme_option('sticky_header_mobile_enabled', 'yes') == 'yes' ? 'true' : 'false' }}">
             <div class="header-items-mobile header-items-mobile--left">
                 <div class="menu-mobile">
                     <div class="menu-box-title">
-                        <div
-                            class="icon menu-icon toggle--sidebar"
-                            href="#menu-mobile"
-                        >
+                        <div class="icon menu-icon toggle--sidebar" href="#menu-mobile">
                             <span class="svg-icon">
                                 <svg>
-                                    <use
-                                        href="#svg-icon-list"
-                                        xlink:href="#svg-icon-list"
-                                    ></use>
+                                    <use href="#svg-icon-list" xlink:href="#svg-icon-list"></use>
                                 </svg>
                             </span>
                         </div>
@@ -409,21 +375,86 @@
             </div>
             <div class="header-items-mobile header-items-mobile--right">
                 <div class="search-form--mobile search-form--mobile-right search-panel">
-                    <a
-                        class="open-search-panel toggle--sidebar"
-                        href="#search-mobile"
-                        title="{{ __('Search') }}"
-                    >
+                    <a class="open-search-panel toggle--sidebar" href="#search-mobile" title="{{ __('Search') }}">
                         <span class="svg-icon">
                             <svg>
-                                <use
-                                    href="#svg-icon-search"
-                                    xlink:href="#svg-icon-search"
-                                ></use>
+                                <use href="#svg-icon-search" xlink:href="#svg-icon-search"></use>
                             </svg>
                         </span>
                     </a>
                 </div>
             </div>
         </div>
+        <script type="text/javascript">
+            document.addEventListener("DOMContentLoaded", function() {
+                fetch('api/get-wallet-amount?customer_id={{ auth('customer')->id() }}')
+                .then(response => response.json())
+                .then(data => {
+                    // Update the wallet balance display
+                    $("#points").text(`₱${data.balance}`);
+                })
+                .catch(error => {
+                    console.error('Error fetching wallet amount:', error);
+                });
+            });
+            $("#topup-form").on("submit",async function(e) {
+                e.preventDefault();
+                $("#exampleModal").modal('hide');
+              await  Swal.fire({
+                    title: "Gcash Qr!",
+                    text: "Send exact amount.",
+                    imageUrl: "{{ asset('images/images.webp') }}",
+                    imageWidth: 400,
+                    imageHeight: 200,
+                    imageAlt: "Gcash QR Code",
+                    
+                    confirmButtonText: "send"
+                }).then(async(result) => {
+                    console.log(result);
+                    
+                    if (result.isConfirmed) {
+                        const { value: reference } = await Swal.fire({
+                            title: "Input reference",
+                            input: "email",
+                            inputLabel: "Enter your reference number",
+                            inputPlaceholder: "Enter your reference number",
+                            showCancelButton: true,
+                            inputValidator: (value) => {
+                                if (!value) {
+                                return "You need to write something!";
+                                }
+                            }
+                            });
+                            if (reference) {
+                               await fetch('api/add-money-to-wallet', {
+                                    method: 'POST',
+                                    headers: {
+                                        'Content-Type': 'application/json'
+                                    },
+                                    body: JSON.stringify({
+                                        amount: document.getElementById('amount').value,
+                                        customer_id: document.getElementById('customer_id').value,
+                                        reference: reference
+                                    })
+                                })
+                                .then(response => {
+                                    if (!response.ok) {
+                                        throw new Error(`HTTP error! status: ${response.status}`);
+                                    }
+                                    $('#exampleModal').modal('hide');
+                                    return response.json();
+                                })
+                                .then(data => {
+                                    console.log('Success:', data);
+                                    Swal.fire("Success!", "Your wallet has been topped up.", "success");
+                                })
+                                .catch(error => {
+                                    console.error('Error:', error);
+                                    Swal.fire("Error!", "There was an error processing your request.", "error");
+                                });
+                            }
+                    }
+                });
+            });
+        </script>
     </header>

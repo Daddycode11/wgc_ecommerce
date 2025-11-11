@@ -17,7 +17,7 @@
                         <div class="ps-product__content mt-3">
                             <h5 class="fw-semibold mb-2">
                                 <a href="{{ route('bidding.details', $bid->id) }}">
-                                    {{ optional($bid->product)->name }}
+                                    {{ optional($bid->product)->name }}asdfasdf
                                 </a>
                             </h5>
                             <p class="mb-1 small text-muted">
@@ -27,10 +27,10 @@
                             <p class="text-danger countdown" data-end="{{ $bid->end_time }}">
                                 ⏰ Ends in: <span>--</span>
                             </p>
-                            <a href="{{ route('bidding.details', $bid->id) }}"
-                               class="btn btn-primary w-100 rounded-pill">
+                            <button data-bs-toggle="modal"   data-bid-id="{{ $bid->id }}"
+                               class="btn btn-primary w-100 rounded-pill btn-edit">
                                <i class="bi bi-hammer"></i> Place a Bid
-                            </a>
+                            </button>
                         </div>
                     </div>
                 </div>
@@ -40,6 +40,17 @@
 </section>
 <script>
 document.addEventListener('DOMContentLoaded', function() {
+    $('.btn-edit').on('click', function() {
+        alert('test');
+        $('#bid-modal').modal('show');
+    });
+    const modalEdit = () => {
+        alert('test');
+        $("#bid-modal").modal('show');
+    }
+    $("body").on("click", ".btn-edit", async (e) => {
+        modalEdit();
+    });
     document.querySelectorAll('.countdown').forEach(function(el) {
         const end = new Date(el.dataset.end).getTime();
         const span = el.querySelector('span');

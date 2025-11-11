@@ -4,6 +4,8 @@ declare(strict_types=1);
 
 namespace Intervention\Image\Interfaces;
 
+use Intervention\Image\Exceptions\DriverException;
+
 interface SpecializableInterface
 {
     /**
@@ -17,15 +19,12 @@ interface SpecializableInterface
     /**
      * Set the driver for which the object is specialized
      *
-     * @param DriverInterface $driver
-     * @return SpecializableInterface
+     * @throws DriverException
      */
     public function setDriver(DriverInterface $driver): self;
 
     /**
      * Return the driver for which the object was specialized
-     *
-     * @return DriverInterface
      */
     public function driver(): DriverInterface;
 }

@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 namespace Intervention\Image\Traits;
 
+use Intervention\Image\Exceptions\DriverException;
 use Intervention\Image\Interfaces\DriverInterface;
 use Intervention\Image\Interfaces\SpecializableInterface;
 use ReflectionClass;
@@ -12,8 +13,6 @@ trait CanBeDriverSpecialized
 {
     /**
      * The driver with which the instance may be specialized
-     *
-     * @var DriverInterface
      */
     protected DriverInterface $driver;
 
@@ -53,8 +52,26 @@ trait CanBeDriverSpecialized
      */
     public function setDriver(DriverInterface $driver): SpecializableInterface
     {
+        if (!$this->belongsToDriver($driver)) {
+            throw new DriverException(
+                "Class '" . $this::class . "' can not be used with " . $driver->id() . " driver."
+            );
+        }
+
         $this->driver = $driver;
 
         return $this;
+    }
+
+    /**
+     * Determine if the current object belongs to the given driver's namespace
+     */
+    protected function belongsToDriver(object $driver): bool
+    {
+        $namespace = function (object $object): string {
+            return (new ReflectionClass($object))->getNamespaceName();
+        };
+
+        return str_starts_with($namespace($this), $namespace($driver));
     }
 }

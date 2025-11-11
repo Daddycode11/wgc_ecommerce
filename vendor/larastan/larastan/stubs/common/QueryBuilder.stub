@@ -46,7 +46,7 @@ class Builder
     /**
      * Add an "or where" clause to the query.
      *
-     * @param  \Closure|model-property|array<model-property|int, mixed>  $column
+     * @param  \Closure|string|array<string|int, mixed>  $column
      * @param  mixed  $operator
      * @param  mixed  $value
      * @return $this
@@ -56,7 +56,7 @@ class Builder
     /**
      * Add a "where" clause comparing two columns to the query.
      *
-     * @param  model-property|array<model-property|int, mixed>  $first
+     * @param  string|array<string|int, mixed>  $first
      * @param  string|null  $operator
      * @param  string|null  $second
      * @param  string|null  $boolean
@@ -180,16 +180,24 @@ class Builder
      *
      * @param  int|string  $id
      * @param  array<string>  $columns
-     * @return mixed|static
+     * @return array<array-key, mixed>|object|null
      */
     public function find($id, $columns = ['*']);
 
     /**
      * Get a lazy collection for the given query.
      *
-     * @return \Illuminate\Support\LazyCollection<int, mixed>
+     * @return \Illuminate\Support\LazyCollection<int, \stdClass>
      */
     public function cursor();
+
+    /**
+     * Execute the query as a "select" statement.
+     *
+     * @param  string[]|string  $columns
+     * @return \Illuminate\Support\Collection<int, \stdClass>
+     */
+    public function get($columns = ['*']);
 
     /**
      * Get an array with the values of a given column.

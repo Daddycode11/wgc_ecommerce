@@ -2,6 +2,8 @@
 
 namespace Theme\Farmart\Http\Controllers;
 
+use App\Models\Wallet;
+use App\Models\WalletTransaction;
 use Botble\Base\Facades\BaseHelper;
 use Botble\Base\Facades\EmailHandler;
 use Botble\Base\Http\Responses\BaseHttpResponse;
@@ -12,6 +14,7 @@ use Botble\Ecommerce\Repositories\Interfaces\ProductInterface;
 use Botble\Marketplace\Models\Store;
 use Botble\Theme\Facades\Theme;
 use Botble\Theme\Http\Controllers\PublicController;
+use Botble\WalletTransactions\Models\WalletTransactions;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Http\Request;
 use Theme\Farmart\Http\Requests\ContactSellerRequest;
@@ -163,5 +166,38 @@ class FarmartController extends PublicController
         }
 
         return $response->setData($data);
+    }
+    public function addAmmount (Request $request)
+    {
+    
+       $hasWallet = Wallet::where('customer_id', $request->customer_id)->first();
+       if($hasWallet){
+        WalletTransactions::create([
+            'wallet_id' => $hasWallet->id,
+            'amount' => $request->amount,
+            'description' => 'Added amount to wallet',
+            'reference' => $request->reference,
+            'status' => 'pending',
+        ]);
+       }else{
+        $newWallet = Wallet::create([
+            'user_id' => $request->customer_id,
+            'balance' => 0,
+        ]);
+        
+        $wallet = WalletTransactions::create([
+            'wallet_id' => $newWallet->id,
+            'amount' => $request->amount,
+            'description' => 'Added amount to wallet',
+            'reference' => $request->reference,
+            'status' => 'pending',
+        ]);
+       } 
+
+       return response()->json(['message' => 'Amount added to wallet successfully wait to verify.']);
+    }
+    public function getAmount(Request $request){
+        $wallet = Wallet::where('customer_id', $request->query()['customer_id'])->first();
+        return response()->json(['balance' => $wallet ? $wallet->balance : 0]);
     }
 }

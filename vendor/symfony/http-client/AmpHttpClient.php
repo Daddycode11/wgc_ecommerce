@@ -118,6 +118,7 @@ final class AmpHttpClient implements HttpClientInterface, LoggerAwareInterface, 
         }
 
         $request = new Request(implode('', $url), $method);
+        $request->setBodySizeLimit(0);
 
         if ($options['http_version']) {
             $request->setProtocolVersions(match ((float) $options['http_version']) {
@@ -165,7 +166,7 @@ final class AmpHttpClient implements HttpClientInterface, LoggerAwareInterface, 
             foreach ($pushedResponses as [$pushedUrl, $pushDeferred]) {
                 $pushDeferred->fail(new CancelledException());
 
-                $this->logger?->debug(sprintf('Unused pushed response: "%s"', $pushedUrl));
+                $this->logger?->debug(\sprintf('Unused pushed response: "%s"', $pushedUrl));
             }
         }
 

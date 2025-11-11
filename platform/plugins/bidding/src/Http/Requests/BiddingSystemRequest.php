@@ -11,8 +11,13 @@ class BiddingSystemRequest extends Request
     public function rules(): array
     {
         return [
-            'name' => ['required', 'string', 'max:220'],
-            'status' => Rule::in(BaseStatusEnum::values()),
+            'title' => 'required|string|max:255',
+            'product_id' => 'required|exists:ec_products,id',
+            'starting_price' => 'required|numeric|min:0',
+            'min_bid_increment' => 'required|numeric|min:0',
+            'end_time' => 'required|date',
+            'image' => 'nullable|image|max:2048',
+            'is_published' => [Rule::in(BaseStatusEnum::values())],
         ];
     }
 }

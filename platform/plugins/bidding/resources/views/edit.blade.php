@@ -48,6 +48,12 @@
                 <label class="form-check-label" for="is_published">Published</label>
             </div>
 
+            
+            <div class="form-check mb-3">
+                <input type="datetime-local" class="form-control" name="end_time" id="end_time" value="{{ $bidding_system->end_time }}">
+                <label class="form-check-label" for="end_time">End Date</label>
+            </div>
+
             <div class="d-flex justify-content-end">
                 <a href="{{ route('bidding-system.index') }}" class="btn btn-secondary me-2">Cancel</a>
                 <button type="submit" class="btn btn-success">Update</button>

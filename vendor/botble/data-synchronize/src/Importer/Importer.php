@@ -3,6 +3,8 @@
 namespace Botble\DataSynchronize\Importer;
 
 use Botble\Base\Facades\Assets;
+use Botble\Base\Facades\BaseHelper;
+use Botble\DataSynchronize\Concerns\Importer\HasImportResults;
 use Botble\DataSynchronize\Contracts\Importer\WithMapping;
 use Botble\DataSynchronize\DataTransferObjects\ChunkImportResponse;
 use Botble\DataSynchronize\DataTransferObjects\ChunkValidateResponse;
@@ -22,6 +24,8 @@ use Symfony\Component\HttpFoundation\BinaryFileResponse;
 
 abstract class Importer
 {
+    use HasImportResults;
+
     protected bool $renderWithoutLayout = false;
 
     abstract public function columns(): array;
@@ -29,6 +33,11 @@ abstract class Importer
     abstract public function getValidateUrl(): string;
 
     abstract public function getImportUrl(): string;
+
+    public function getUploadUrl(): string
+    {
+        return route('data-synchronize.upload');
+    }
 
     abstract public function handle(array $data): int;
 
@@ -51,6 +60,11 @@ abstract class Importer
     public function examples(): array
     {
         return [];
+    }
+
+    public function getLayout(): string
+    {
+        return BaseHelper::getAdminMasterLayoutTemplate();
     }
 
     public function getColumns(): array
@@ -126,16 +140,18 @@ abstract class Importer
             ->addScripts('dropzone')
             ->addStyles('dropzone');
 
+        return view($this->getView(), ['importer' => $this]);
+    }
+
+    protected function getView(): string
+    {
         $view = 'packages/data-synchronize::import';
 
         if ($this->renderWithoutLayout) {
             $view = 'packages/data-synchronize::partials.importer';
         }
 
-        return view(
-            apply_filters('data_synchronize_importer_view', $view),
-            ['importer' => $this]
-        );
+        return apply_filters('data_synchronize_importer_view', $view);
     }
 
     public function headerToSnakeCase(): bool
@@ -164,7 +180,9 @@ abstract class Importer
 
             $storageFolder = config('packages.data-synchronize.data-synchronize.storage.path');
 
-            $this->filesystem()->move("$storageFolder/{$fileName}", "$storageFolder/{$newFileName}");
+            if ($this->filesystem()->exists("$storageFolder/{$fileName}")) {
+                $this->filesystem()->move("$storageFolder/{$fileName}", "$storageFolder/{$newFileName}");
+            }
         }
 
         return new ChunkValidateResponse(
@@ -179,21 +197,31 @@ abstract class Importer
     public function import(string $fileName, int $offset = 0, int $limit = 100): ChunkImportResponse
     {
         $rows = $this->getRowsByOffset($fileName, $offset, $limit);
-
         $count = count($rows);
+        $rows = $this->transformRows($rows);
 
-        $imported = $this->handle($this->transformRows($rows));
+        $rowNumber = 0;
+        $rows = array_filter($rows, function () use (&$rowNumber) {
+            $rowNumber++;
+
+            return ! in_array($rowNumber, $this->failures()->map(fn ($failure) => $failure['row'])->all());
+        });
+
+        $imported = $this->handle($rows);
 
         if ($count === 0) {
             $storageFolder = config('packages.data-synchronize.data-synchronize.storage.path');
 
-            $this->filesystem()->delete("$storageFolder/$fileName");
+            if ($this->filesystem()->exists("$storageFolder/$fileName")) {
+                $this->filesystem()->delete("$storageFolder/$fileName");
+            }
         }
 
         return new ChunkImportResponse(
             offset: $offset,
             count: $count,
             imported: $imported,
+            failures: $this->failures()->all()
         );
     }
 

@@ -6,7 +6,10 @@ use Botble\Base\Facades\Assets;
 use Botble\Base\Facades\BaseHelper;
 use Botble\DataSynchronize\Concerns\Exporter\HasEmptyState;
 use Botble\DataSynchronize\Enums\ExportColumnType;
+use Carbon\Carbon;
 use Illuminate\Contracts\View\View;
+use Illuminate\Support\Arr;
+use Illuminate\Support\Str;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\WithColumnFormatting;
@@ -31,6 +34,10 @@ abstract class Exporter implements FromCollection, ShouldAutoSize, WithColumnFor
     protected string $format = Excel::XLSX;
 
     protected string $url;
+
+    protected bool $optimizeMemory = true;
+
+    protected int $memoryCheckInterval = 1000;
 
     /**
      * @return \Botble\DataSynchronize\Exporter\ExportColumn[]
@@ -60,6 +67,11 @@ abstract class Exporter implements FromCollection, ShouldAutoSize, WithColumnFor
         );
     }
 
+    public function getLayout(): string
+    {
+        return BaseHelper::getAdminMasterLayoutTemplate();
+    }
+
     /**
      * @return \Botble\DataSynchronize\Exporter\ExportCounter[]
      */
@@ -81,7 +93,7 @@ abstract class Exporter implements FromCollection, ShouldAutoSize, WithColumnFor
     public function map($row): array
     {
         return array_map(function (ExportColumn $column) use ($row) {
-            $value = is_array($row) ? $row[$column->getName()] : $row->{$column->getName()};
+            $value = Arr::get((array) $row, $column->getName());
 
             return match ($column->getType()) {
                 ExportColumnType::BOOLEAN => $value ? $column->getTrueValue() : $column->getFalseValue(),
@@ -168,21 +180,37 @@ abstract class Exporter implements FromCollection, ShouldAutoSize, WithColumnFor
 
     public function getExportFileName(): string
     {
-        return str_replace(' ', '-', $this->getLabel());
+        return sprintf(
+            '%s-%s.%s',
+            Str::slug($this->getLabel()),
+            BaseHelper::formatDateTime(Carbon::now(), 'Y-m-d-H-i-s'),
+            $this->format
+        );
     }
 
     public function render(): View
     {
         Assets::addScriptsDirectly('vendor/core/packages/data-synchronize/js/data-synchronize.js');
 
-        return view('packages/data-synchronize::export', [
+        return view($this->getView(), [
             'exporter' => $this,
         ]);
+    }
+
+    protected function getView(): string
+    {
+        $view = 'packages/data-synchronize::export';
+
+        return apply_filters('data_synchronize_exporter_view', $view);
     }
 
     public function export(): BinaryFileResponse
     {
         BaseHelper::maximumExecutionTimeAndMemoryLimit();
+
+        if ($this->optimizeMemory) {
+            $this->configureMemoryOptimization();
+        }
 
         $writeType = match ($this->format) {
             'csv' => Excel::CSV,
@@ -196,7 +224,7 @@ abstract class Exporter implements FromCollection, ShouldAutoSize, WithColumnFor
             },
         ];
 
-        return ExcelFacade::download($this, "{$this->getExportFileName()}.{$this->format}", $writeType, $headers);
+        return ExcelFacade::download($this, $this->getExportFileName(), $writeType, $headers);
     }
 
     public function acceptedColumns(?array $columns): self
@@ -250,5 +278,34 @@ abstract class Exporter implements FromCollection, ShouldAutoSize, WithColumnFor
     public function allColumnsIsDisabled(): bool
     {
         return count($this->getAcceptedColumns()) === count(array_filter($this->getAcceptedColumns(), fn (ExportColumn $column) => $column->isDisabled()));
+    }
+
+    protected function configureMemoryOptimization(): void
+    {
+        if ($memoryLimit = config('packages.data-synchronize.export.memory_limit')) {
+            ini_set('memory_limit', $memoryLimit);
+        }
+
+        if ($timeLimit = config('packages.data-synchronize.export.time_limit')) {
+            set_time_limit($timeLimit);
+        }
+
+        if (class_exists('DB')) {
+            \DB::disableQueryLog();
+        }
+    }
+
+    public function setOptimizeMemory(bool $optimize): self
+    {
+        $this->optimizeMemory = $optimize;
+
+        return $this;
+    }
+
+    public function setMemoryCheckInterval(int $interval): self
+    {
+        $this->memoryCheckInterval = $interval;
+
+        return $this;
     }
 }

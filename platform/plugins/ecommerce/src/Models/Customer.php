@@ -2,6 +2,7 @@
 
 namespace Botble\Ecommerce\Models;
 
+use App\Models\Bid;
 use Botble\Base\Facades\MacroableModels;
 use Botble\Base\Models\BaseModel;
 use Botble\Base\Models\BaseQueryBuilder;
@@ -31,7 +32,7 @@ use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Laravel\Sanctum\HasApiTokens;
 use App\Models\Wallet;
-
+use Botble\Bidding\Models\BiddingSystem;
 
 class Customer extends BaseModel implements
     AuthenticatableContract,
@@ -138,6 +139,11 @@ class Customer extends BaseModel implements
         return $this->hasOne(Wallet::class);
     }
 
+    public function bids(): HasMany
+    {
+        return $this->hasMany(Bid::class, 'customer_id', 'id');
+    }
+
 
     public function __get($key)
     {
@@ -154,6 +160,11 @@ class Customer extends BaseModel implements
     public function reviews(): HasMany
     {
         return $this->hasMany(Review::class, 'customer_id');
+    }
+
+    public function biddings(): HasMany
+    {
+        return $this->hasMany(BiddingSystem::class, 'winner_id');
     }
 
     public function promotions(): BelongsToMany
