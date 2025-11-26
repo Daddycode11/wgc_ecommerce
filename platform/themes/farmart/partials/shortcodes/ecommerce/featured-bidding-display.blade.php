@@ -1,5 +1,5 @@
 <div class="bidding-catalog container py-4">
-    <h2 class="text-center mb-4">🔥 Active Bidding Items aaaa</h2>
+    <h2 class="text-center mb-4">🔥 Active Bidding Items</h2>
 
     <div class="row">
         @forelse($bids as $bid)

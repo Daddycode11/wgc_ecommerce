@@ -107,7 +107,6 @@
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         async function updateBidWinners() {
-            alert("Sdfds")
           await  fetch('{{ route('UpdateBidWinner') }}', {
                 method: 'POST',
                 headers: {

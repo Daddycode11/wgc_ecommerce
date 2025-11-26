@@ -77,6 +77,11 @@ class RaffleForm extends FormAbstract
                 'choices' => BaseStatusEnum::labels(),
                 'required' => true,
             ])
+            ->add('is_featured', 'onOff', [
+                'label' => 'Is Featured',
+                'default_value' => false,
+            ])
+            ->setBreakFieldPoint('is_featured')
             ->setBreakFieldPoint('status');
     }
 }

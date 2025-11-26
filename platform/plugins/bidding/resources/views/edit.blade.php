@@ -35,6 +35,11 @@
                 <input type="number" step="0.01" name="min_bid_increment" class="form-control" value="{{ $bidding_system->min_bid_increment }}" required>
             </div>
 
+              <div class="mb-3">
+                <label class="form-label">End Time</label>
+                <input type="datetime-local"  name="end_time" class="form-control" value="{{ \Carbon\Carbon::parse($bidding_system->end_time)->format('Y-m-d\TH:i') }}" required>
+            </div>
+
             <div class="mb-3">
                 <label class="form-label">Upload Image</label>
                 <input type="file" name="image" class="form-control" accept="image/*">

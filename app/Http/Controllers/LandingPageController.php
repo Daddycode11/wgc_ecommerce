@@ -29,13 +29,15 @@ class LandingPageController extends Controller
         $userWallet->balance -= $amount;
 
         
-        $biddingSystem = BiddingSystem::where("id", $biddingSystemId)->first();
         $userWallet->save();
-        // dd($biddingSystem->highestBid()->first());
-        $lastBid = Wallet::where("customer_id", $biddingSystem->highestBid()->first()->customer_id)->first();
-        $lastBid->balance += $biddingSystem->highestBid()->first()->amount;
-        // dd($lastBid);
-        $lastBid->save();
+        $biddingSystem = BiddingSystem::where("id", $biddingSystemId)->first();
+        if($biddingSystem && $biddingSystem->highestBid()->first()){
+            $lastBid = Wallet::where("customer_id", $biddingSystem->highestBid()->first()->customer_id)->first();
+            if(!$lastBid){
+                $lastBid->balance += $biddingSystem->highestBid()->first()->amount;
+                $lastBid->save();
+            }
+        }
         $dd = Bid::create([
             'bidding_system_id' => $biddingSystemId,
             'customer_id' => $request->customer_id,
